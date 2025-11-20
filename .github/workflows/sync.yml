@@ -1,0 +1,49 @@
+name: Sync Subscriptions
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: "*/5 * * * *"  # 每 5 分钟跑一次（UTC 时间）
+  workflow_dispatch: {}      # 手动触发
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Update clash.yaml from upstream
+        run: |
+          echo "Fetching upstream subscription..."
+          curl -L "$URL" -o clash.yaml
+          echo "Upstream saved to clash.yaml"
+        env:
+          URL: ${{ secrets.URL }}  # 使用你设置的 secret 名称
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run sync script
+        run: |
+          node scripts/sync_subs.js
+
+      - name: Commit & push if changed
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add .
+            git commit -m "Sync subs from upstream [skip ci]"
+            git push
+          else
+            echo "No changes to commit."
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
