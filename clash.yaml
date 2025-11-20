@@ -1,0 +1,25 @@
+# clash.yaml - 所有用户共用的基础配置
+port: 7890
+socks-port: 7891
+mode: Rule
+log-level: info
+
+proxies:
+  - name: "节点1"
+    type: vmess
+    server: example1.com
+    port: 443
+    uuid: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+    alterId: 0
+    cipher: auto
+    tls: true
+
+proxy-groups:
+  - name: "PROXY"
+    type: select
+    proxies:
+      - "节点1"
+
+rules:
+  - GEOIP,CN,DIRECT
+  - MATCH,PROXY
