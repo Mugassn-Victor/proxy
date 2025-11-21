@@ -1,5 +1,4 @@
 proxies:
-      name: "Mugassn"
     - client-fingerprint: chrome
       name: "\U0001F1FA\U0001F1F8US_1|854KB/s"
       network: ws
