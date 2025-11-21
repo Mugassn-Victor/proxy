@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 检出代码仓库
       - name: Checkout repo
         uses: actions/checkout@v4
 
@@ -28,12 +29,12 @@ jobs:
         env:
           URL: ${{ secrets.URL }}  # 使用你设置的 secret 名称
 
-      # 确保 `users.txt` 文件是最新的
-      - name: Checkout users.txt from repository
+      # 确保 `users.json` 文件是最新的
+      - name: Checkout users.json from repository
         run: |
-          echo "Fetching users.txt from repo..."
+          echo "Fetching users.json from repo..."
           git pull origin main
-          echo "users.txt fetched from repository"
+          echo "users.json fetched from repository"
 
       # 设置 Node.js 环境
       - name: Setup Node.js
