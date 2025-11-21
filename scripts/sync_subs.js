@@ -67,31 +67,35 @@ function updateFirstNodeName(yamlContent, expireAt) {
   return updatedYaml;
 }
 
+// 创建新的用户订阅文件
+function createUserSubscription(user) {
+  const { token, expireAt } = user;
+  const filePath = path.join(SUBS_DIR, `${token}.yaml`);
+
+  if (fs.existsSync(filePath)) {
+    console.log(`订阅文件已存在: ${token}.yaml`);
+  } else {
+    // 如果订阅文件不存在，生成新的文件
+    let baseContent = loadBase();
+    const updatedYamlContent = updateFirstNodeName(baseContent, expireAt);
+    
+    // 将更新后的 YAML 内容写回文件
+    fs.writeFileSync(filePath, updatedYamlContent, 'utf8');
+    console.log(`为用户 ${token} 创建了新的订阅文件，并更新了到期时间`);
+  }
+}
+
 // 主逻辑
 function main() {
-  const baseContent = loadBase();  // 加载 clash.yaml 配置
-  let users = loadUsers();  // 加载 users.txt 文件
+  const users = loadUsers();  // 加载 users.txt 文件
   ensureSubsDir();  // 确保 clash 目录存在
 
   // 处理每个用户的订阅文件
-  for (const user of users) {
-    const token = user.token;
-    const expireAt = user.expireAt;
-    const filePath = path.join(SUBS_DIR, `${token}.yaml`);
+  users.forEach(user => {
+    createUserSubscription(user);
+  });
 
-    if (fs.existsSync(filePath)) {
-      let yamlContent = fs.readFileSync(filePath, 'utf8');
-      
-      // 更新 YAML 内容中的第一个节点的 `name` 为用户的到期时间
-      const updatedYamlContent = updateFirstNodeName(yamlContent, expireAt);
-      
-      // 将更新后的 YAML 内容写回文件
-      fs.writeFileSync(filePath, updatedYamlContent, 'utf8');
-      console.log(`已更新用户 ${token} 的订阅文件，将第一个节点的 name 更新为到期时间`);
-    } else {
-      console.log(`订阅文件不存在: ${token}.yaml`);
-    }
-  }
+  console.log('所有用户订阅文件已处理完成');
 }
 
 main();
