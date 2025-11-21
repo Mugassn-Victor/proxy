@@ -4,20 +4,7 @@ const path = require('path');
 const BASE_FILE = path.join(__dirname, '..', 'clash.yaml');  // 基础配置文件路径
 const USERS_FILE = path.join(__dirname, '..', 'users.txt');  // 用户信息文件路径
 const SUBS_DIR = path.join(__dirname, '..', 'clash');  // 存放用户订阅文件的目录
-const LOG_FILE = path.join(__dirname, '..', 'log.txt');  // 日志文件路径
-
-// 输出 GitHub Actions 服务器的当前时间
-function logServerTime() {
-  const now = new Date();
-  const chinaTimeOffset = 8 * 60 * 60 * 1000;  // 中国时间偏移（8小时）
-  const chinaTime = new Date(now.getTime() + chinaTimeOffset);
-
-  const logMessage = `GitHub Actions 服务器当前时间 (UTC): ${now.toISOString()}\n` +
-                     `GitHub Actions 服务器当前时间 (中国时间 CST, UTC+8): ${chinaTime.toISOString()}\n\n`;
-
-  // 将时间输出到日志文件
-  fs.appendFileSync(LOG_FILE, logMessage, 'utf8');
-}
+const LOG_FILE = path.join(__dirname, '..', 'log.txt');  // 日志文件路径（现在不再输出到日志）
 
 // 加载 clash.yaml 配置文件
 function loadBase() {
@@ -71,12 +58,6 @@ function isExpired(expireAt) {
   // 将 expireDate 转换为中国时间
   const expireChinaTime = new Date(expireDate.getTime() + chinaTimeOffset);
 
-  const logMessage = `当前中国时间: ${chinaTime.toISOString()}\n` +
-                     `用户 ${expireAt} 的过期时间（中国时间）: ${expireChinaTime.toISOString()}\n`;
-
-  // 将日志信息输出到日志文件
-  fs.appendFileSync(LOG_FILE, logMessage, 'utf8');
-
   // 比较用户的到期时间和当前的中国时间
   return expireChinaTime.getTime() <= chinaTime.getTime();  // 如果到期时间 <= 当前时间，返回 true，表示已过期
 }
@@ -86,16 +67,8 @@ function removeExpiredUserFromFile(users, token) {
   return users.filter(user => user.token !== token);
 }
 
-// 写入过期用户日志
-function logExpiredUser(token, expireAt) {
-  const logMessage = `用户 ${token} 已过期，过期时间：${expireAt.split('T')[0]}\n`;
-  fs.appendFileSync(LOG_FILE, logMessage, 'utf8');  // 将过期用户日志写入日志文件
-}
-
 // 主逻辑
 function main() {
-  logServerTime();  // 输出服务器时间，调试用
-
   const baseContent = loadBase();  // 加载 clash.yaml 配置
   let users = loadUsers();  // 加载 users.txt 文件
   ensureSubsDir();  // 确保 clash 目录存在
@@ -122,13 +95,9 @@ function main() {
       // 如果用户过期，删除订阅文件并从 users.txt 中删除该用户
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
-        console.log(`删除过期订阅文件: ${filename}`);
         deleted++;
       }
 
-      // 记录过期用户
-      logExpiredUser(token, expireAt);
-      
       // 从 users.txt 中删除该行
       users = removeExpiredUserFromFile(users, token);
       existingFiles.delete(filename);
@@ -136,7 +105,6 @@ function main() {
       // 用户未过期，确保订阅文件存在
       if (!fs.existsSync(filePath)) {
         fs.writeFileSync(filePath, baseContent, 'utf8');
-        console.log(`创建订阅文件: ${filename}`);
         created++;
       }
       existingFiles.delete(filename);
@@ -147,7 +115,6 @@ function main() {
   for (const filename of existingFiles) {
     const filePath = path.join(SUBS_DIR, filename);
     fs.unlinkSync(filePath);
-    console.log(`清理无主订阅文件: ${filename}`);
     deleted++;
   }
 
