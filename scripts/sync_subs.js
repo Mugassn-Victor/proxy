@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const BASE_FILE = path.join(__dirname, '..', 'clash.yaml');  // 基础配置文件路径
+const BASE_FILE = path.join(__dirname, '..', 'clash.yaml');  // 基础配置文件路径1
 const USERS_FILE = path.join(__dirname, '..', 'users.txt');  // 用户信息文件路径
 const SUBS_DIR = path.join(__dirname, '..', 'clash');  // 存放用户订阅文件的目录
 
