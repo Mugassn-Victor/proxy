@@ -1,0 +1,12 @@
+[
+  {
+    "token": "user001",
+    "expireAt": "20251128",
+    "note": "test user"
+  },
+  {
+    "token": "user002",
+    "expireAt": "20251231",
+    "note": "another user"
+  }
+]
