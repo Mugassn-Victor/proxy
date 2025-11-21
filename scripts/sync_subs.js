@@ -22,7 +22,6 @@ function loadUsers() {
   const data = fs.readFileSync(USERS_FILE, 'utf8');
   const lines = data.split('\n');
 
-  // 解析用户信息，格式为 "token expireDate"
   const users = lines.map(line => {
     const [token, expireAt] = line.split(' ').map(item => item.trim());
     if (token && expireAt) {
@@ -84,7 +83,7 @@ function main() {
         console.log(`删除过期订阅文件: ${filename}`);
         deleted++;
       }
-      // 从 users.txt 中删除该用户
+      // 从 users.txt 中删除该行
       users = removeExpiredUserFromFile(users, token);
       existingFiles.delete(filename);
     } else {
