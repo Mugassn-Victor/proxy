@@ -1,9 +1,6 @@
 name: Sync Subscriptions
 
 on:
-  push:
-    branches:
-      - main
   schedule:
     - cron: "0 */2 * * *"  # 每 2 小时运行一次（UTC 时间）
   workflow_dispatch: {}      # 手动触发
@@ -18,6 +15,17 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+
+      # 安装 Node.js 环境
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # 安装 npm 依赖
+      - name: Install dependencies
+        run: |
+          npm install js-yaml
 
       # 更新 clash.yaml
       - name: Update clash.yaml from upstream
@@ -34,12 +42,6 @@ jobs:
           echo "Fetching users.txt from repo..."
           git pull origin main
           echo "users.txt fetched from repository"
-
-      # 设置 Node.js 环境
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
 
       # 运行同步脚本
       - name: Run sync script
