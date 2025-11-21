@@ -1,18 +1,9 @@
 const fs = require('fs');
 const path = require('path');
-const yaml = require('js-yaml');  // 用于解析和生成 YAML 文件
+const yaml = require('js-yaml');
 
-const BASE_FILE = path.join(__dirname, '..', 'clash.yaml');  // 基础配置文件路径
 const USERS_FILE = path.join(__dirname, '..', 'users.txt');  // 用户信息文件路径
 const SUBS_DIR = path.join(__dirname, '..', 'clash');  // 存放用户订阅文件的目录
-
-// 加载 clash.yaml 配置文件
-function loadBase() {
-  if (!fs.existsSync(BASE_FILE)) {
-    throw new Error('clash.yaml 不存在，请先创建 clash.yaml');
-  }
-  return fs.readFileSync(BASE_FILE, 'utf8');
-}
 
 // 读取 users.txt 文件并解析用户数据
 function loadUsers() {
@@ -34,68 +25,34 @@ function loadUsers() {
   return users;
 }
 
-// 确保 clash 目录存在
-function ensureSubsDir() {
-  if (!fs.existsSync(SUBS_DIR)) {
-    fs.mkdirSync(SUBS_DIR, { recursive: true });
-  }
+// 判断一个用户是否过期（基于当前时间）
+function isExpired(expireAt) {
+  const now = new Date();
+  const expireDate = new Date(expireAt);
+  
+  // 比较用户的到期时间和当前时间
+  return expireDate.getTime() <= now.getTime();  // 如果到期时间 <= 当前时间，返回 true，表示已过期
 }
 
-// 更新第一个节点的 name 为用户的到期时间
-function updateFirstNodeName(yamlContent, expireAt) {
-  // 解析 YAML 内容
-  let parsedYaml;
-  try {
-    parsedYaml = yaml.load(yamlContent);
-  } catch (e) {
-    console.error("YAML 解析错误:", e);
-    return yamlContent;  // 如果解析失败，则直接返回原始内容
-  }
-
-  // 确保 proxies 数组存在且至少有一个元素
-  if (Array.isArray(parsedYaml.proxies) && parsedYaml.proxies.length > 0) {
-    // 将第一个节点的 `name` 替换为用户的到期时间
-    parsedYaml.proxies[0].name = `用户到期时间: ${expireAt.split('T')[0]}`;  // 第一个节点 `name` 改为到期时间
-  } else {
-    console.error('YAML 格式不正确，或者 proxies 数组为空');
-    return yamlContent;  // 如果 "proxies" 数组不存在或为空，则返回原始内容
-  }
-
-  // 重新生成 YAML 内容
-  const updatedYaml = yaml.dump(parsedYaml);
-
-  return updatedYaml;
+// 从 users.txt 中删除已过期用户
+function removeExpiredUsers(users) {
+  return users.filter(user => !isExpired(user.expireAt));  // 保留未过期的用户
 }
 
-// 创建新的用户订阅文件
-function createUserSubscription(user) {
-  const { token, expireAt } = user;
-  const filePath = path.join(SUBS_DIR, `${token}.yaml`);
-
-  if (fs.existsSync(filePath)) {
-    console.log(`订阅文件已存在: ${token}.yaml`);
-  } else {
-    // 如果订阅文件不存在，生成新的文件
-    let baseContent = loadBase();
-    const updatedYamlContent = updateFirstNodeName(baseContent, expireAt);
-    
-    // 将更新后的 YAML 内容写回文件
-    fs.writeFileSync(filePath, updatedYamlContent, 'utf8');
-    console.log(`为用户 ${token} 创建了新的订阅文件，并更新了到期时间`);
-  }
+// 更新 users.txt 文件
+function updateUsersFile(users) {
+  const updatedUsersData = users.map(user => `${user.token} ${user.expireAt.split('T')[0]}`).join('\n');
+  fs.writeFileSync(USERS_FILE, updatedUsersData, 'utf8');
 }
 
-// 主逻辑
+// 主逻辑：删除过期用户
 function main() {
-  const users = loadUsers();  // 加载 users.txt 文件
-  ensureSubsDir();  // 确保 clash 目录存在
-
-  // 处理每个用户的订阅文件
-  users.forEach(user => {
-    createUserSubscription(user);
-  });
-
-  console.log('所有用户订阅文件已处理完成');
+  let users = loadUsers();  // 加载 users.txt 文件
+  users = removeExpiredUsers(users);  // 删除过期用户
+  
+  // 更新 users.txt 文件
+  updateUsersFile(users);
+  console.log('已删除过期用户，更新了 users.txt 文件');
 }
 
 main();
