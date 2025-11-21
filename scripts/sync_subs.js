@@ -1,10 +1,10 @@
 const fs = require('fs');
 const path = require('path');
+const yaml = require('js-yaml');  // 用于解析和生成 YAML 文件
 
 const BASE_FILE = path.join(__dirname, '..', 'clash.yaml');  // 基础配置文件路径
 const USERS_FILE = path.join(__dirname, '..', 'users.txt');  // 用户信息文件路径
 const SUBS_DIR = path.join(__dirname, '..', 'clash');  // 存放用户订阅文件的目录
-const LOG_FILE = path.join(__dirname, '..', 'log.txt');  // 日志文件路径（现在不再输出到日志）
 
 // 加载 clash.yaml 配置文件
 function loadBase() {
@@ -41,30 +41,32 @@ function ensureSubsDir() {
   }
 }
 
-// 判断一个用户是否过期（基于中国时间）
-function isExpired(expireAt) {
-  const now = new Date();
-  const chinaTimeOffset = 8 * 60 * 60 * 1000;  // 中国时间偏移（8小时）
+// 添加用户到期时间节点
+function addExpirationNode(yamlContent, expireAt) {
+  const expirationNode = `# 用户到期时间: ${expireAt.split('T')[0]}\n`;
 
-  // 将当前时间转换为中国时间
-  const chinaTime = new Date(now.getTime() + chinaTimeOffset);
+  // 解析 YAML 内容
+  let parsedYaml;
+  try {
+    parsedYaml = yaml.load(yamlContent);
+  } catch (e) {
+    console.error("YAML 解析错误:", e);
+    return yamlContent;  // 如果解析失败，则直接返回原始内容
+  }
 
-  // 将 expireAt 转换为中国时间（假设 expireAt 为 yyyyMMdd 格式）
-  const expireYear = expireAt.substring(0, 4);
-  const expireMonth = expireAt.substring(4, 6);
-  const expireDay = expireAt.substring(6, 8);
-  const expireDate = new Date(`${expireYear}-${expireMonth}-${expireDay}T00:00:00Z`);
+  // 检查 proxies 是否存在并是数组
+  if (Array.isArray(parsedYaml.proxies)) {
+    // 将到期时间节点插入到 proxies 数组的最后
+    parsedYaml.proxies.push({ name: expirationNode, type: 'comment' });
+  } else {
+    console.error('YAML 格式不正确，没有找到 "proxies" 数组');
+    return yamlContent;  // 如果 "proxies" 数组不存在，则返回原始内容
+  }
 
-  // 将 expireDate 转换为中国时间
-  const expireChinaTime = new Date(expireDate.getTime() + chinaTimeOffset);
+  // 重新生成 YAML 内容
+  const updatedYaml = yaml.dump(parsedYaml);
 
-  // 比较用户的到期时间和当前的中国时间
-  return expireChinaTime.getTime() <= chinaTime.getTime();  // 如果到期时间 <= 当前时间，返回 true，表示已过期
-}
-
-// 从 users.txt 中删除已过期用户
-function removeExpiredUserFromFile(users, token) {
-  return users.filter(user => user.token !== token);
+  return updatedYaml;
 }
 
 // 主逻辑
@@ -73,55 +75,25 @@ function main() {
   let users = loadUsers();  // 加载 users.txt 文件
   ensureSubsDir();  // 确保 clash 目录存在
 
-  const existingFiles = new Set(
-    fs.readdirSync(SUBS_DIR)
-      .filter(f => f.endsWith('.yaml'))  // 获取所有以 .yaml 结尾的文件
-  );
-
-  let created = 0;
-  let deleted = 0;
-
-  // 处理每个用户
+  // 处理每个用户的订阅文件
   for (const user of users) {
     const token = user.token;
     const expireAt = user.expireAt;
-    if (!token || !expireAt) continue;
+    const filePath = path.join(SUBS_DIR, `${token}.yaml`);
 
-    const filename = `${token}.yaml`;
-    const filePath = path.join(SUBS_DIR, filename);
-    const expired = isExpired(expireAt);  // 判断是否过期
-
-    if (expired) {
-      // 如果用户过期，删除订阅文件并从 users.txt 中删除该用户
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-        deleted++;
-      }
-
-      // 从 users.txt 中删除该行
-      users = removeExpiredUserFromFile(users, token);
-      existingFiles.delete(filename);
+    if (fs.existsSync(filePath)) {
+      let yamlContent = fs.readFileSync(filePath, 'utf8');
+      
+      // 在 YAML 内容中添加用户的到期时间节点
+      const updatedYamlContent = addExpirationNode(yamlContent, expireAt);
+      
+      // 将更新后的 YAML 内容写回文件
+      fs.writeFileSync(filePath, updatedYamlContent, 'utf8');
+      console.log(`已更新用户 ${token} 的订阅文件，添加到期时间节点`);
     } else {
-      // 用户未过期，确保订阅文件存在
-      if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, baseContent, 'utf8');
-        created++;
-      }
-      existingFiles.delete(filename);
+      console.log(`订阅文件不存在: ${token}.yaml`);
     }
   }
-
-  // 清理掉 `clash/` 中存在，但 `users.txt` 中已没有的订阅文件
-  for (const filename of existingFiles) {
-    const filePath = path.join(SUBS_DIR, filename);
-    fs.unlinkSync(filePath);
-    deleted++;
-  }
-
-  // 将更新后的用户列表写回 `users.txt` 文件
-  fs.writeFileSync(USERS_FILE, users.map(user => `${user.token} ${user.expireAt.split('T')[0]}`).join('\n'), 'utf8');
-
-  console.log(`同步完成：创建 ${created} 个，删除 ${deleted} 个`);
 }
 
 main();
