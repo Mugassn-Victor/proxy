@@ -1,9 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 
-const BASE_FILE = path.join(__dirname, '..', 'clash.yaml');  // 基础配置文件路径1
+const BASE_FILE = path.join(__dirname, '..', 'clash.yaml');  // 基础配置文件路径
 const USERS_FILE = path.join(__dirname, '..', 'users.txt');  // 用户信息文件路径
 const SUBS_DIR = path.join(__dirname, '..', 'clash');  // 存放用户订阅文件的目录
+const EXPIRED_LOG_FILE = path.join(__dirname, '..', 'expired_users.txt');  // 过期用户日志文件路径
 
 // 加载 clash.yaml 配置文件
 function loadBase() {
@@ -60,6 +61,12 @@ function removeExpiredUserFromFile(users, token) {
   return users.filter(user => user.token !== token);
 }
 
+// 写入过期用户日志
+function logExpiredUser(token, expireAt) {
+  const logMessage = `用户 ${token} 已过期，过期时间：${expireAt.split('T')[0]}\n`;
+  fs.appendFileSync(EXPIRED_LOG_FILE, logMessage, 'utf8');
+}
+
 // 主逻辑
 function main() {
   const baseContent = loadBase();  // 加载 clash.yaml 配置
@@ -91,6 +98,10 @@ function main() {
         console.log(`删除过期订阅文件: ${filename}`);
         deleted++;
       }
+
+      // 记录过期用户
+      logExpiredUser(token, expireAt);
+      
       // 从 users.txt 中删除该行
       users = removeExpiredUserFromFile(users, token);
       existingFiles.delete(filename);
