@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const BASE_FILE = path.join(__dirname, '..', 'clash.yaml');  // 基础配置文件路径
-const USERS_FILE = path.join(__dirname, '..', 'users.txt');  // 用户信息文件路径
+const USERS_FILE = path.join(__dirname, '..', 'users.json');  // 使用 JSON 格式的用户信息文件
 const SUBS_DIR = path.join(__dirname, '..', 'clash');  // 存放用户订阅文件的目录
 
 // 加载 clash.yaml 配置文件
@@ -13,22 +13,14 @@ function loadBase() {
   return fs.readFileSync(BASE_FILE, 'utf8');
 }
 
-// 读取 users.txt 文件并解析用户数据
+// 读取 users.json 文件并解析用户数据
 function loadUsers() {
   if (!fs.existsSync(USERS_FILE)) {
     return [];
   }
 
   const data = fs.readFileSync(USERS_FILE, 'utf8');
-  const lines = data.split('\n');
-
-  const users = lines.map(line => {
-    const [token, expireAt] = line.split(' ').map(item => item.trim());
-    if (token && expireAt) {
-      return { token, expireAt: `${expireAt}T00:00:00Z` };  // 将 expireAt 转换为 ISO 格式
-    }
-    return null;
-  }).filter(user => user !== null);
+  const users = JSON.parse(data);  // 解析 JSON 格式的用户数据
 
   return users;
 }
@@ -47,7 +39,7 @@ function isExpired(expireAt) {
   return exp.getTime() <= now.getTime();
 }
 
-// 从 users.txt 中删除已过期用户
+// 从 users.json 中删除已过期用户
 function removeExpiredUserFromFile(users, token) {
   return users.filter(user => user.token !== token);
 }
@@ -55,7 +47,7 @@ function removeExpiredUserFromFile(users, token) {
 // 主逻辑
 function main() {
   const baseContent = loadBase();  // 加载 clash.yaml 配置
-  let users = loadUsers();  // 加载 users.txt 文件
+  let users = loadUsers();  // 加载 users.json 文件
   ensureSubsDir();  // 确保 clash 目录存在
 
   const existingFiles = new Set(
@@ -77,13 +69,13 @@ function main() {
     const expired = isExpired(expireAt);  // 判断是否过期
 
     if (expired) {
-      // 如果用户过期，删除订阅文件并从 users.txt 中删除该用户
+      // 如果用户过期，删除订阅文件并从 users.json 中删除该用户
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
         console.log(`删除过期订阅文件: ${filename}`);
         deleted++;
       }
-      // 从 users.txt 中删除该行
+      // 从 users.json 中删除该行
       users = removeExpiredUserFromFile(users, token);
       existingFiles.delete(filename);
     } else {
@@ -97,7 +89,7 @@ function main() {
     }
   }
 
-  // 清理掉 `clash/` 中存在，但 `users.txt` 中已没有的订阅文件
+  // 清理掉 `clash/` 中存在，但 `users.json` 中已没有的订阅文件
   for (const filename of existingFiles) {
     const filePath = path.join(SUBS_DIR, filename);
     fs.unlinkSync(filePath);
@@ -105,8 +97,8 @@ function main() {
     deleted++;
   }
 
-  // 将更新后的用户列表写回 `users.txt` 文件
-  fs.writeFileSync(USERS_FILE, users.map(user => `${user.token} ${user.expireAt.split('T')[0]}`).join('\n'), 'utf8');
+  // 将更新后的用户列表写回 `users.json` 文件
+  fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2), 'utf8');  // 使用 JSON 格式保存
 
   console.log(`同步完成：创建 ${created} 个，删除 ${deleted} 个`);
 }
