@@ -1,8 +1,8 @@
 proxies:
-    - name: "# 用户到期时间: 2025-11-28"
+    - name: "用户到期时间: 2025-11-28"
       type: 'comment'
     - client-fingerprint: chrome
-      name: "\U0001F1FA\U0001F1F8US_1|854KB/s"
+      name: "huhu"
       network: ws
       password: trojan
       port: "443"
