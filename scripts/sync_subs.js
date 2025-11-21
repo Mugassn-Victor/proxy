@@ -6,6 +6,16 @@ const USERS_FILE = path.join(__dirname, '..', 'users.txt');  // 用户信息文�
 const SUBS_DIR = path.join(__dirname, '..', 'clash');  // 存放用户订阅文件的目录
 const EXPIRED_LOG_FILE = path.join(__dirname, '..', 'expired_users.txt');  // 过期用户日志文件路径
 
+// 输出 GitHub Actions 服务器的当前时间
+function logServerTime() {
+  const now = new Date();
+  const chinaTimeOffset = 8 * 60 * 60 * 1000;  // 中国时间偏移（8小时）
+  const chinaTime = new Date(now.getTime() + chinaTimeOffset);
+
+  console.log("GitHub Actions 服务器当前时间 (UTC):", now.toISOString());  // 输出 UTC 时间
+  console.log("GitHub Actions 服务器当前时间 (中国时间 CST, UTC+8):", chinaTime.toISOString());  // 输出中国时间
+}
+
 // 加载 clash.yaml 配置文件
 function loadBase() {
   if (!fs.existsSync(BASE_FILE)) {
@@ -69,6 +79,8 @@ function logExpiredUser(token, expireAt) {
 
 // 主逻辑
 function main() {
+  logServerTime();  // 输出服务器时间，调试用
+
   const baseContent = loadBase();  // 加载 clash.yaml 配置
   let users = loadUsers();  // 加载 users.txt 文件
   ensureSubsDir();  // 确保 clash 目录存在
