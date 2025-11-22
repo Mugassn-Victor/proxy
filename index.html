@@ -7,6 +7,78 @@
     <title>Mugassn Proxy 用户查询</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <!-- 仅用于验证码弹窗的样式，不会覆盖你原来的页面布局 -->
+    <style>
+        .captcha-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .captcha-container {
+            background: #ffffff;
+            color: #333;
+            border-radius: 10px;
+            padding: 20px 24px;
+            width: 320px;
+            max-width: 90%;
+            box-sizing: border-box;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+        .captcha-container h2 {
+            margin: 0 0 8px;
+            font-size: 18px;
+        }
+        .captcha-container p {
+            margin: 0 0 12px;
+            font-size: 14px;
+        }
+        .captcha-code-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .captcha-input {
+            width: 130px;
+            height: 32px;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+            padding: 0 8px;
+            font-size: 14px;
+        }
+        #captchaCanvas {
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+        .captcha-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+        .captcha-btn {
+            height: 32px;
+            padding: 0 16px;
+            font-size: 14px;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+        }
+        .captcha-btn.ok {
+            background-color: #457adb;
+            color: #fff;
+        }
+        .captcha-btn.cancel {
+            background-color: #e5e7eb;
+            color: #111827;
+        }
+    </style>
 </head>
 <body>
     <div id="page" class="site">
@@ -26,9 +98,25 @@
                         </p>
                     </form>
 
-                    <!-- 查询结果提示区域 -->
+                    <!-- 查询结果提示区域（只用于一些文字提示，不再放“未查询到该用户”） -->
                     <p id="result"></p>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 验证码弹窗 -->
+    <div class="captcha-modal" id="captchaModal">
+        <div class="captcha-container">
+            <h2>安全验证</h2>
+            <p>多次尝试失败，请先完成验证码后再继续查询。</p>
+            <div class="captcha-code-row">
+                <input type="text" class="captcha-input" id="captchaInput" placeholder="请输入验证码">
+                <canvas id="captchaCanvas" width="100" height="30" title="点击刷新验证码"></canvas>
+            </div>
+            <div class="captcha-buttons">
+                <button type="button" class="captcha-btn cancel" id="captchaCancel">取消</button>
+                <button type="button" class="captcha-btn ok" id="captchaSubmit">提交</button>
             </div>
         </div>
     </div>
@@ -39,6 +127,119 @@
             const submitButton = document.getElementById('submitButton');
             const resultEl = document.getElementById('result');
 
+            // 验证码相关元素
+            const captchaModal = document.getElementById('captchaModal');
+            const captchaInput = document.getElementById('captchaInput');
+            const captchaCanvas = document.getElementById('captchaCanvas');
+            const captchaSubmit = document.getElementById('captchaSubmit');
+            const captchaCancel = document.getElementById('captchaCancel');
+
+            // 状态控制
+            let needCaptcha = false;      // 是否需要验证码（第一次失败后变为 true）
+            let captchaPassed = false;    // 验证码是否已通过
+            let captchaCode = [];         // 当前验证码字符数组
+
+            // ============== 通用函数 ==============
+
+            function openCaptchaModal() {
+                captchaInput.value = '';
+                drawCaptcha(captchaCode);
+                captchaModal.style.display = 'flex';
+            }
+
+            function closeCaptchaModal() {
+                captchaModal.style.display = 'none';
+            }
+
+            // 随机颜色
+            function randomColor() {
+                const r = Math.floor(Math.random() * 256);
+                const g = Math.floor(Math.random() * 256);
+                const b = Math.floor(Math.random() * 256);
+                return "rgb(" + r + "," + g + "," + b + ")";
+            }
+
+            // 生成并绘制验证码
+            function drawCaptcha(show_num) {
+                const canvas_width = captchaCanvas.width;
+                const canvas_height = captchaCanvas.height;
+                const context = captchaCanvas.getContext("2d");
+                context.clearRect(0, 0, canvas_width, canvas_height);
+
+                const sCode = "a,b,c,d,e,f,g,h,i,j,k,m,n,p,q,r,s,t,u,v,w,x,y,z,A,B,C,E,F,G,H,J,K,L,M,N,P,Q,R,S,T,W,X,Y,Z,1,2,3,4,5,6,7,8,9,0";
+                const aCode = sCode.split(",");
+                const aLength = aCode.length;
+
+                for (let i = 0; i < 4; i++) {
+                    const j = Math.floor(Math.random() * aLength);
+                    const deg = Math.random() - 0.5;
+                    const txt = aCode[j];
+                    show_num[i] = txt.toLowerCase();
+                    const x = 10 + i * 20;
+                    const y = 20 + Math.random() * 8;
+                    context.font = "bold 20px 微软雅黑";
+                    context.translate(x, y);
+                    context.rotate(deg);
+                    context.fillStyle = randomColor();
+                    context.fillText(txt, 0, 0);
+                    context.rotate(-deg);
+                    context.translate(-x, -y);
+                }
+
+                // 画干扰线
+                for (let i = 0; i <= 5; i++) {
+                    context.strokeStyle = randomColor();
+                    context.beginPath();
+                    context.moveTo(Math.random() * canvas_width, Math.random() * canvas_height);
+                    context.lineTo(Math.random() * canvas_width, Math.random() * canvas_height);
+                    context.stroke();
+                }
+
+                // 画干扰点
+                for (let i = 0; i <= 30; i++) {
+                    context.strokeStyle = randomColor();
+                    context.beginPath();
+                    const x = Math.random() * canvas_width;
+                    const y = Math.random() * canvas_height;
+                    context.moveTo(x, y);
+                    context.lineTo(x + 1, y + 1);
+                    context.stroke();
+                }
+            }
+
+            // ============== 验证码事件绑定 ==============
+
+            captchaCanvas.addEventListener('click', () => {
+                drawCaptcha(captchaCode);
+            });
+
+            captchaSubmit.addEventListener('click', () => {
+                const val = captchaInput.value.trim().toLowerCase();
+                const num = captchaCode.join("");
+
+                if (!val) {
+                    alert('请输入验证码！');
+                    return;
+                }
+
+                if (val === num) {
+                    alert('验证通过！');
+                    captchaPassed = true;
+                    closeCaptchaModal();
+                    // 验证通过后，用户可以再次点击“查询”继续操作
+                } else {
+                    alert('验证码错误！请重新输入！');
+                    captchaInput.value = '';
+                    drawCaptcha(captchaCode);
+                }
+            });
+
+            captchaCancel.addEventListener('click', () => {
+                closeCaptchaModal();
+            });
+
+            // ============== 用户名查询逻辑 ==============
+
             submitButton.addEventListener('click', (event) => {
                 event.preventDefault();
 
@@ -48,6 +249,12 @@
 
                 if (!username) {
                     resultEl.textContent = '请输入用户名！';
+                    return;
+                }
+
+                // 如果已经要求验证码但尚未通过，先弹验证码
+                if (needCaptcha && !captchaPassed) {
+                    openCaptchaModal();
                     return;
                 }
 
@@ -78,11 +285,14 @@
                         }
 
                         if (found) {
-                            // ✅ 查询成功：跳转到 /user/#用户名
+                            // 查询成功：跳转到 /user/#用户名
                             const target = 'user/#' + encodeURIComponent(username);
                             window.location.href = target;
                         } else {
-                            resultEl.textContent = '未查询到该用户';
+                            // 第一次失败：弹窗提示 + 之后强制验证码
+                            alert('未查询到该用户');
+                            needCaptcha = true;
+                            captchaPassed = false;
                         }
                     })
                     .catch(err => {
