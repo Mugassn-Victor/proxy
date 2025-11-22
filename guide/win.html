@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>Karing Windows 安装与使用教程</title>
+  <title>Mugassn Proxy 配置教程</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
@@ -76,15 +76,33 @@
 </head>
 <body>
 
-<h1>Karing Windows 安装与使用教程</h1>
-<p class="tagline">以 Windows 10 / 11 为例，从下载到成功联网的完整步骤</p>
+<h1>Karing 电脑端安装与使用教程</h1>
+<p class="tagline">本文以 Windows 为例，MacOS 同理，也可参考。</p>
 
 <div class="box">
   <h2>一、下载安装 Karing</h2>
+  
+  <p>
+    Windows 加速链接：
+    <a href="https://cdn.mugassn.cloudns.org/KaringX/karing/releases/download/v1.2.8.1101/karing_1.2.8.1101_windows_x64.exe"
+       target="_blank"
+       rel="noopener noreferrer">
+      点击下载
+    </a>
+  </p>
 
   <p>
+    MacOS 加速链接：
+    <a href="https://cdn.mugassn.cloudns.org/KaringX/karing/releases/download/v1.2.8.1101/karing_1.2.8.1101_macos_universal.dmgs"
+       target="_blank"
+       rel="noopener noreferrer">
+      点击下载
+    </a>
+  </p>
+  
+  <p>
     Karing 是一个多平台网络代理软件，支持 iOS、Windows、Android、macOS 等平台。
-    其代码托管在 GitHub 上面，可从 GitHub 上下载 Karing 软件安装包。
+    其代码托管在 GitHub 上面，其他系统和架构可从 GitHub 上下载 Karing 软件安装包。
   </p>
 
   <p>
@@ -98,11 +116,11 @@
 
   <figure>
     <img src="https://karing.cc/wp-content/uploads/2025/08/download-karing.webp" alt="下载 Karing 客户端">
-    <figcaption>从 GitHub Releases 下载各平台的 Karing 安装包</figcaption>
+    <figcaption>可以从 GitHub Releases 下载各平台的 Karing 安装包</figcaption>
   </figure>
 
   <div class="box tip">
-    <strong>建议：</strong>优先使用 64 位 Windows 10 / 11 系统，直接下载最新版本的 Windows 安装包即可。
+    <strong>建议：</strong>优先使用 64 位 Windows 10 / 11 系统，直接下载最新版本的安装包即可。
   </div>
 </div>
 
@@ -153,9 +171,9 @@
 </div>
 
 <div class="box">
-  <h2>四、添加机场订阅（导入节点配置）</h2>
+  <h2>四、添加订阅</h2>
 
-  <p>要让 Karing 真正工作，需要导入一个可用的节点订阅（机场提供的链接）。</p>
+  <p>要让 Karing 真正工作，需要导入一个订阅。</p>
 
   <h3>1. 在机场后台复制订阅链接</h3>
   <ol>
@@ -164,20 +182,19 @@
     <li>复制其中一个 Karing 支持的订阅链接（如 Clash / Sing-box / 通用订阅）。</li>
   </ol>
 
-  <h3>2. 在 Karing Windows 中导入订阅</h3>
+  <h3>2. 在 Karing 中导入订阅</h3>
   <ol>
     <li>在 Karing 主界面中，点击左侧的 <strong>“我的配置”</strong> 或顶部的“配置”入口。</li>
     <li>点击 <strong>“添加配置”</strong>（有的版本是 “+” 按钮）。</li>
     <li>在“配置链接 / 内容”输入框里粘贴刚才复制的订阅地址。</li>
-    <li>在“备注”里写上机场名称，方便区分，例如 <code>某某机场-Karing</code>。</li>
+    <li>在“备注”里写上 Mugassn ,方便区分。</code>。</li>
     <li>确认更新频率（如每 6 小时 / 每天自动更新订阅）。</li>
     <li>点击 <strong>保存 / 确定</strong>，等待 Karing 拉取配置。</li>
     <li>回到“我的配置”列表，选中刚添加的这条配置，点击“更新”按钮手动刷新一次。</li>
   </ol>
 
   <div class="box warning">
-    <strong>注意：</strong>如果 Karing 提示订阅地址无效，请先在浏览器中打开订阅链接，确认能正常访问；
-    某些机场可能需要先在后台“重置订阅”或切换到支持 Clash/Sing-box 的订阅格式。
+    <strong>注意：</strong>如果 Karing 提示订阅地址无效，请先在浏览器中打开订阅链接，确认能正常访问。
   </div>
 </div>
 
@@ -193,7 +210,7 @@
     <li>也可以使用 <strong>“自动选择”</strong> 功能，让 Karing 自动选取延迟最低的节点。</li>
   </ol>
 
-  <h3>2. 打开 Windows 端代理开关</h3>
+  <h3>2. 打开电脑端代理开关</h3>
   <ol>
     <li>回到 Karing 主界面，找到醒目的总开关按钮（通常在顶部或中间）。</li>
     <li>点击开关，将状态切换为“开启 / 已连接”。</li>
@@ -211,12 +228,6 @@
     <strong>切换规则模式：</strong>在规则模式 / 全局模式之间切换，可以根据需要决定是否所有流量都走代理。
   </div>
 </div>
-
-<footer>
-  本页面为 Karing Windows 端的安装与使用步骤整理版，仅供学习 / 备份使用。<br>
-  最新版本与详细说明建议以官方站点为准：
-  <a href="https://karing.app" target="_blank" rel="noopener noreferrer">https://karing.app</a>。
-</footer>
 
 </body>
 </html>
