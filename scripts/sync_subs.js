@@ -3,8 +3,8 @@ const path = require('path');
 
 const BASE_FILE = path.join(__dirname, '..', 'clash.yaml');  // 基础配置文件路径
 const USERS_FILE = path.join(__dirname, '..', 'users.txt');  // 用户信息文件路径
-const SUBS_DIR = path.join(__dirname, '..', 'clash');  // 存放用户订阅文件的目录
-const LOG_FILE = path.join(__dirname, '..', 'log.txt');  // 目前没用到，但保留变量不影响
+const SUBS_DIR = path.join(__dirname, '..', 'clash');        // 存放用户订阅文件的目录
+const LOG_FILE = path.join(__dirname, '..', 'log.txt');      // 目前没用到，但保留变量不影响
 
 // ========== 工具函数 ==========
 
@@ -32,7 +32,7 @@ function loadUsers() {
     .map(line => {
       const [token, expireAt] = line.split(/\s+/); // 按空格/多个空格分割
       if (token && expireAt) {
-        // 这里直接保存原始的 20251128，不再加 T00:00:00Z
+        // 保持原始 yyyyMMdd 格式
         return { token, expireAt };
       }
       return null;
@@ -86,25 +86,38 @@ function formatExpireDate(expireAt) {
   return expireAt;
 }
 
-// 在 clash.yaml 的文本内容里，把第一个 name: "xxx" 改成 name: "到期: 2025-11-28"
+// 在 clash.yaml 文本里：
+// 第 1 个 name: "xxx" → name: "到期: 2025-11-28"
+// 第 2 个 name: "xxx" → name: "客服微信:Mugassn"
 function applyExpireToYaml(baseContent, expireAt) {
   const dateStr = formatExpireDate(expireAt);
 
-  // 匹配第一处 name: "xxxx"
-  const re = /(^\s*name:\s*")[^"\r\n]*/m;
-  if (!re.test(baseContent)) {
-    // 找不到 name 就直接原样返回
-    return baseContent;
-  }
-  return baseContent.replace(re, `$1到期: ${dateStr}`);
+  // 匹配所有 name: "xxxx"
+  const re = /(^\s*name:\s*")(.*?)(")/gm;
+  let count = 0;
+
+  const result = baseContent.replace(re, (match, p1, p2, p3) => {
+    count++;
+    if (count === 1) {
+      // 第一个 name：显示到期时间
+      return `${p1}到期: ${dateStr}${p3}`;
+    } else if (count === 2) {
+      // 第二个 name：显示客服微信
+      return `${p1}客服微信:Mugassn${p3}`;
+    }
+    // 其他 name 不动
+    return match;
+  });
+
+  return result;
 }
 
 // ========== 主逻辑 ==========
 
 function main() {
-  const baseContent = loadBase();     // 上游 clash.yaml 内容
-  let users = loadUsers();            // users.txt 用户列表
-  ensureSubsDir();                    // 确保 clash/ 目录存在
+  const baseContent = loadBase(); // 上游 clash.yaml 内容
+  let users = loadUsers();        // users.txt 用户列表
+  ensureSubsDir();                // 确保 clash/ 目录存在
 
   const existingFiles = new Set(
     fs.readdirSync(SUBS_DIR)
@@ -134,7 +147,8 @@ function main() {
       users = removeExpiredUserFromFile(users, token);
       existingFiles.delete(filename);
     } else {
-      // 未过期：根据当前 clash.yaml 生成用户订阅，并把第一个 name 改成到期时间
+      // 未过期：根据当前 clash.yaml 生成用户订阅，
+      // 并把第一个 name 改为到期时间，第二个 name 改为客服微信
       const userYaml = applyExpireToYaml(baseContent, expireAt);
       const existedBefore = fs.existsSync(filePath);
 
