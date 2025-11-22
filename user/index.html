@@ -36,7 +36,6 @@
             font-size: 14px;
         }
 
-        /* 如果你的 .submit 在 style.css 里已经有背景色，这里只补充一点阴影/过渡 */
         .copy-btn.submit {
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
             transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.1s ease;
@@ -64,13 +63,16 @@
         <div class="container">
             <div class="login">
                 <div class="hero">
-                    <!-- 标题里显示 用户 xxx 的配置中心 -->
-                    <h1>用户 <span id="usernameTitle"></span> 的配置中心</h1>
+                    <!-- 标题：第一行 用户 xxx，第二行 的配置中心 -->
+                    <h1>
+                        用户 <span id="usernameTitle"></span><br>
+                        的配置中心
+                    </h1>
                 </div>
                 <div class="main result-page">
                     <!-- 链接展示区 -->
                     <div class="link-block">
-                        <p>为用户 <span id="usernameText"></span> 生成的订阅链接：</p>
+                        <p><strong>订阅链接：</strong></p>
                         <p class="password">
                             <input type="text" id="linkInput" class="link-input" readonly>
                         </p>
@@ -131,14 +133,12 @@
             username = decodeURIComponent(username);
 
             const usernameTitle = document.getElementById('usernameTitle');
-            const usernameText  = document.getElementById('usernameText');
             const linkInput     = document.getElementById('linkInput');
             const copyButton    = document.getElementById('copyButton');
             const copyStatus    = document.getElementById('copyStatus');
 
             if (!username) {
                 usernameTitle.textContent = '未知用户';
-                usernameText.textContent  = '未知用户';
                 linkInput.value = '未获取到用户名，请返回首页重新查询。';
                 copyButton.disabled = true;
                 return;
@@ -149,9 +149,8 @@
                         encodeURIComponent(username) +
                         '.yaml';
 
-            // 标题 & 文本里的用户名
+            // 标题里的用户名
             usernameTitle.textContent = username;
-            usernameText.textContent  = username;
             // 输入框里显示完整链接
             linkInput.value = url;
 
