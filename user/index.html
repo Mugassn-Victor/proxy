@@ -15,13 +15,16 @@
             margin-bottom: 24px;
         }
 
-        /* 显示订阅链接的输入框，尽量占满宽度，方便看全 */
+        /* 显示订阅链接的输入框，尽量占满宽度，方便看全 + 去掉边框 */
         #linkInput.link-input {
             width: 100%;
             max-width: 100%;
             box-sizing: border-box;
             padding: 8px 10px;
             font-size: 14px;
+            border: none;          /* 去掉边框 */
+            outline: none;         /* 点击时不出现蓝色外框 */
+            background-color: rgba(0, 0, 0, 0.15); /* 轻微底色，方便看出区域，可按需删掉 */
         }
 
         /* 美化复制按钮 */
@@ -56,6 +59,14 @@
             margin-top: 6px;
             opacity: 0.9;
         }
+
+        /* 教程链接字体改成蓝色 */
+        .tutorials a {
+            color: #3b82f6;            /* 蓝色 */
+        }
+        .tutorials a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -63,9 +74,9 @@
         <div class="container">
             <div class="login">
                 <div class="hero">
-                    <!-- 标题：第一行 用户 xxx，第二行 的配置中心 -->
+                    <!-- 标题：第一行 xxx，第二行 的配置中心（去掉“用户”两字） -->
                     <h1>
-                        用户 <span id="usernameTitle"></span><br>
+                        <span id="usernameTitle"></span><br>
                         的配置中心
                     </h1>
                 </div>
