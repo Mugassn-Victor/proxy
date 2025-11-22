@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>用户配置查询</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- 只用仓库里原本的样式文件，不加内联样式 -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>用户配置查询</h1>
+      <p>输入您的用户名，如果存在则显示对应的配置链接。</p>
+
+      <form id="check-form">
+        <label for="username">输入您的用户名：</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          placeholder="例如：user1"
+          autocomplete="off"
+        />
+        <button type="submit">查询</button>
+      </form>
+
+      <div id="result"></div>
+    </div>
+
+    <script>
+      async function handleSubmit(event) {
+        event.preventDefault();
+
+        const input = document.getElementById("username");
+        const resultEl = document.getElementById("result");
+        const username = input.value.trim();
+
+        resultEl.textContent = "";
+        resultEl.className = ""; // 清空可能的错误样式 class
+
+        if (!username) {
+          resultEl.textContent = "请输入用户名";
+          resultEl.classList.add("error");
+          return;
+        }
+
+        try {
+          // 加时间戳避免缓存
+          const resp = await fetch("users.txt?_=" + Date.now());
+
+          if (!resp.ok) {
+            resultEl.textContent = "用户数据文件加载失败，请稍后再试。";
+            resultEl.classList.add("error");
+            return;
+          }
+
+          const text = await resp.text();
+          const lines = text.split(/\r?\n/);
+
+          let found = false;
+
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed) continue; // 跳过空行
+
+            // 每行格式：用户名 空格 日期
+            const parts = trimmed.split(/\s+/);
+            const nameInFile = parts[0];
+
+            if (nameInFile === username) {
+              found = true;
+              break;
+            }
+          }
+
+          if (found) {
+            const url =
+              "https://mugassn-proxy.dpdns.org/clash/" +
+              encodeURIComponent(username) +
+              ".yaml";
+
+            resultEl.innerHTML =
+              '已找到该用户，对应链接为：<br><a href="' +
+              url +
+              '" target="_blank" rel="noopener noreferrer">' +
+              url +
+              "</a>";
+          } else {
+            resultEl.textContent = "未查询到该用户";
+            resultEl.classList.add("error");
+          }
+        } catch (e) {
+          console.error(e);
+          resultEl.textContent = "查询过程中发生错误，请稍后重试。";
+          resultEl.classList.add("error");
+        }
+      }
+
+      document
+        .getElementById("check-form")
+        .addEventListener("submit", handleSubmit);
+    </script>
+  </body>
+</html>
