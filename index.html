@@ -17,21 +17,16 @@
                 </div>
                 <div class="main">
                     <form id="loginForm">
-                        <p>
-                            <input type="email" id="authCode" placeholder="邮箱">
-                        </p>
+                        <!-- 只保留用户名输入框 -->
                         <p class="password">
-                            <!-- 这里改成输入用户名，不再是授权码 -->
-                            <input type="text" id="passwordInput" placeholder="用户名">
-                            <!-- 小眼睛图标去掉了，如果想保留可以再加回去 -->
-                            <a href="https://preview.mugassn.cloudns.org" target="_blank">谱面预览</a>
+                            <input type="text" id="usernameInput" placeholder="用户名">
                         </p>
                         <p>
                             <input type="submit" class="submit" id="submitButton" value="登录">
                         </p>
                     </form>
 
-                    <!-- 查询结果显示区域：在这里贴出链接或显示未查询到 -->
+                    <!-- 查询结果显示区域 -->
                     <p id="result"></p>
                 </div>
             </div>
@@ -40,7 +35,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const usernameInput = document.getElementById('passwordInput'); // 现在是“用户名”输入框
+            const usernameInput = document.getElementById('usernameInput');
             const submitButton = document.getElementById('submitButton');
             const resultEl = document.getElementById('result');
 
@@ -48,8 +43,8 @@
                 event.preventDefault();
 
                 const username = usernameInput.value.trim();
-                resultEl.textContent = '';      // 清空上一次结果
-                resultEl.innerHTML = '';       // 同时清空 HTML
+                resultEl.textContent = '';
+                resultEl.innerHTML = '';
 
                 if (!username) {
                     resultEl.textContent = '请输入用户名！';
