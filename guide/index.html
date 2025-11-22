@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Karing 科学上网工具使用教程｜完整图文版</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="https://karing.cc/wp-content/uploads/2025/08/cropped-karing-70x70.webp">
+  <style>
+    body {
+      font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 16px;
+      line-height: 1.7;
+      background: #f7f7f9;
+      color: #222;
+    }
+    h1, h2, h3 {
+      color: #111;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+    .tagline {
+      text-align: center;
+      color: #666;
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+    }
+    code {
+      background: #eee;
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-size: 0.9em;
+    }
+    pre {
+      background: #262626;
+      color: #f8f8f2;
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+    }
+    .box {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+    .tip {
+      border-left: 4px solid #4caf50;
+    }
+    .warning {
+      border-left: 4px solid #ff9800;
+    }
+    .danger {
+      border-left: 4px solid #f44336;
+    }
+    ul, ol {
+      padding-left: 1.3rem;
+    }
+    a {
+      color: #1976d2;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    figure {
+      margin: 12px 0;
+      text-align: center;
+    }
+    figure img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    figcaption {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 4px;
+    }
+    footer {
+      margin-top: 32px;
+      font-size: 0.8rem;
+      color: #777;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Karing 科学上网工具使用教程</h1>
+<p class="tagline">2026 最新版完整指南｜适用于 iOS / Android / Windows / macOS</p>
+
+<figure>
+  <img src="https://karing.cc/wp-content/uploads/2025/08/Karing%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B-1024x576.webp" alt="Karing 使用教程导图">
+  <figcaption>Karing 使用教程导图</figcaption>
+</figure>
+
+<div class="box">
+  <h2>一、Karing 是什么？</h2>
+  <p>
+    Karing 是一款<strong>跨平台网络代理工具</strong>，基于 sing-box 内核开发，
+    兼容 Clash、V2ray/V2fly、Sing-box、Shadowsocks 等多种协议和订阅链接。
+  </p>
+  <p>主要特点：</p>
+  <ul>
+    <li><strong>多协议支持</strong>：支持 Shadowsocks、ShadowsocksR、VMess、VLESS、Trojan、Tuic、Socks、HTTP、Hysteria、Hysteria2、WireGuard 等主流协议。</li>
+    <li><strong>跨平台兼容</strong>：支持 Windows、macOS、iOS、Android、HarmonyOS 等多个平台。</li>
+    <li><strong>智能路由</strong>：一套路由规则可应用于多个订阅源，自动分流常见网站。</li>
+    <li><strong>高性能内核</strong>：魔改版 Sing-box 核心，性能和稳定性都比较强。</li>
+    <li><strong>新手友好</strong>：提供新手模式和默认规则组，安装完不用折腾就能直接用。</li>
+  </ul>
+</div>
+
+<div class="box">
+  <h2>二、下载安装 Karing</h2>
+
+  <h3>1. iOS(iphone / ipad) / Mac 用户</h3>
+
+  <figure>
+    <img src="https://karing.cc/wp-content/uploads/2025/08/karing-ios.webp" alt="Karing iOS App Store 预览">
+    <figcaption>在 App Store 中可以搜索到 Karing 客户端</figcaption>
+  </figure>
+
+  <ol>
+    <li>准备一个<strong>非中国大陆</strong>的 Apple ID（美区 / 港区等）。</li>
+    <li>在 App Store 搜索 <code>karing</code> 或 <code>karing vpn</code>。</li>
+    <li>找到图标为蓝紫渐变的 Karing 应用后点击“获取”安装。</li>
+    <li>也可以通过 TestFlight 链接安装测试版。</li>
+  </ol>
+
+  <p>iOS / macOS 相关地址：</p>
+  <ul>
+    <li>App Store：<a href="https://apps.apple.com/us/app/karing/id6472431552" target="_blank" rel="noopener">https://apps.apple.com/us/app/karing/id6472431552</a></li>
+    <li>TestFlight：<a href="https://testflight.apple.com/join/RLU59OsJ" target="_blank" rel="noopener">https://testflight.apple.com/join/RLU59OsJ</a></li>
+  </ul>
+
+  <figure>
+    <img src="https://karing.cc/wp-content/uploads/2025/08/%E4%B8%8B%E8%BD%BDkaring-576x1024.webp" alt="在 App Store 搜索下载 Karing">
+    <figcaption>在 App Store 中搜索关键词“karing”下载安装客户端</figcaption>
+  </figure>
+
+  <h3>2. Windows / Android / Harmony 用户</h3>
+
+  <figure>
+    <img src="https://karing.cc/wp-content/uploads/2025/08/download-karing.webp" alt="Github 下载 Karing 客户端">
+    <figcaption>从 Github Releases 下载各平台的 Karing 安装包</figcaption>
+  </figure>
+
+  <ol>
+    <li>访问 Github Releases：<a href="https://github.com/KaringX/karing/releases" target="_blank" rel="noopener">https://github.com/KaringX/karing/releases</a></li>
+    <li>Windows：下载文件名类似 <code>karing_xxx_windows_x64.exe</code> 的安装包，双击安装。</li>
+    <li>Android / Harmony：下载 <code>karing_xxx_android_arm.apk</code>，拷贝到手机后安装。</li>
+    <li>如果 GitHub 无法访问，可以使用站内提供的备用下载地址。</li>
+  </ol>
+
+  <div class="box tip">
+    <strong>提示：</strong>Windows 安装被 Defender 拦截时，点“显示详细信息” → “仍要运行” 即可。
+  </div>
+</div>
+
+<div class="box">
+  <h2>三、首次启动与基础设置（以 iOS 为例）</h2>
+
+  <h3>1. 接受隐私协议</h3>
+  <ol>
+    <li>首次打开 Karing，会弹出隐私说明页面。</li>
+    <li>滑到页面底部，点击 <strong>Accept &amp; Continue</strong> 继续。</li>
+  </ol>
+
+  <figure>
+    <img src="https://karing.cc/wp-content/uploads/2025/08/acceptcontinue-576x1024.webp" alt="Accept &amp; Continue 界面">
+    <figcaption>首次启动时的隐私说明页面，点击 Accept &amp; Continue</figcaption>
+  </figure>
+
+  <h3>2. 选择语言与地区</h3>
+  <ol>
+    <li>在语言列表中选择 <strong>简体中文</strong>，操作更方便。</li>
+    <li>接着选择当前所在的<strong>国家与地区</strong>，否则可能导致分流错误。</li>
+    <li>新手模式默认开启，保持默认直接下一步 / 完成即可。</li>
+  </ol>
+
+  <figure>
+    <img src="https://karing.cc/wp-content/uploads/2025/08/%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-576x1024.webp" alt="选择简体中文界面">
+    <figcaption>在语言界面选择“简体中文”</figcaption>
+  </figure>
+
+  <figure>
+    <img src="https://karing.cc/wp-content/uploads/2025/08/%E4%B8%8B%E4%B8%80%E6%AD%A5-1024x612.webp" alt="选择国家与地区和分流规则">
+    <figcaption>选择国家与地区，自定义分流组可后面再研究，新手模式保持默认即可</figcaption>
+  </figure>
+
+  <h3>3. 主界面预览</h3>
+  <p>完成向导后，就能看到 Karing 的主界面，大致分为：</p>
+  <ul>
+    <li>顶部：运行时长、连接状态、总流量、速度等信息。</li>
+    <li>中部：当前配置、规则 / 全局、我的配置、添加配置、DNS、分流等按钮。</li>
+    <li>底部：测速、快捷连接、自动选择等功能入口。</li>
+  </ul>
+
+  <figure>
+    <img src="https://karing.cc/wp-content/uploads/2025/08/Karing%E7%95%8C%E9%9D%A2-576x1024.webp" alt="Karing 主界面">
+    <figcaption>Karing 安装完成后的主界面</figcaption>
+  </figure>
+</div>
+
+<div class="box">
+  <h2>四、配置 Karing（添加机场订阅）</h2>
+
+  <p>要实现科学上网，需要给 Karing 添加一个有效的代理节点订阅。推荐新手直接使用支持 Karing / sing-box 的机场订阅。</p>
+
+  <h3>1. 在机场后台复制订阅地址</h3>
+  <ol>
+    <li>登录机场后台，进入“仪表盘 / 我的订阅”。</li>
+    <li>点击<strong>一键订阅</strong>，选择导入到 sing-box / Clash Meta 等。</li>
+    <li>选择“复制订阅地址”，得到订阅链接。</li>
+  </ol>
+
+  <figure>
+    <img src="https://spectrevpn.org/wp-content/uploads/2025/05/Spectre-copy-subscription.webp" alt="机场后台复制订阅地址示意图">
+    <figcaption>在机场仪表盘中点击“一键订阅”→“复制订阅地址”</figcaption>
+  </figure>
+
+  <h3>2. 在 Karing 中添加配置链接</h3>
+  <ol>
+    <li>回到 Karing 主界面，点击底部“添加配置”。</li>
+    <li>在“配置链接/内容”框中粘贴刚才复制的订阅地址。</li>
+    <li>备注处可以写上机场名称，例如 <code>karing.cc</code>，方便区分。</li>
+    <li>点击右上角对勾保存，弹出提示时选择“确定”。</li>
+    <li>在“我的配置”列表中可以看到刚添加好的订阅，记得点一下“更新”。</li>
+  </ol>
+
+  <figure>
+    <img src="https://karing.cc/wp-content/uploads/2025/08/%E6%B7%BB%E5%8A%A0%E8%AE%A2%E9%98%85-1024x612.webp" alt="在 Karing 中添加订阅链接">
+    <figcaption>在 Karing 里粘贴订阅链接，并看到添加成功的提示</figcaption>
+  </figure>
+</div>
+
+<div class="box">
+  <h2>五、选择节点并开启代理</h2>
+
+  <h3>1. 选择服务器节点</h3>
+  <ol>
+    <li>在主界面点击底部的“自动选择 &gt;”进入服务器列表。</li>
+    <li>在服务器界面点击闪电 ⚡ 图标可以测速。</li>
+    <li>根据延迟和线路类型，选择一个合适的节点，或者使用自动选择。</li>
+  </ol>
+
+  <figure>
+    <img src="https://karing.cc/wp-content/uploads/2025/08/%E9%80%89%E4%B8%AD%E8%8A%82%E7%82%B9.webp" alt="Karing 选择节点界面">
+    <figcaption>在“选择服务器”界面中测速并选中合适的节点</figcaption>
+  </figure>
+
+  <h3>2. 打开 Karing 代理开关</h3>
+  <ol>
+    <li>回到主界面，点击底部中间的开关按钮。</li>
+    <li>第一次开启会弹出“允许添加 VPN 配置”的系统提示，选择“允许”。</li>
+    <li>开关变成绿色、界面开始有流量统计，说明代理已经生效。</li>
+  </ol>
+
+  <figure>
+    <img src="https://karing.cc/wp-content/uploads/2025/08/karing%E5%BC%80%E5%90%AF%E4%BB%A3%E7%90%86-1024x612.webp" alt="Karing 打开代理和系统 VPN 授权">
+    <figcaption>开启代理开关并授权 VPN 配置</figcaption>
+  </figure>
+
+  <h3>3. 测试外网访问是否正常</h3>
+  <ol>
+    <li>打开 Safari 或浏览器访问 <code>youtube.com</code>、<code>google.com</code> 等网站。</li>
+    <li>如果页面能正常加载，说明配置成功。</li>
+  </ol>
+
+  <figure>
+    <img src="https://karing.cc/wp-content/uploads/2025/08/Karing%E4%BB%A3%E7%90%86%E8%BD%AF%E4%BB%B6%E6%88%90%E5%8A%9F%E8%AE%BF%E9%97%AEyoutube%E7%BD%91%E7%AB%99-576x1024.webp" alt="Karing 成功访问 YouTube">
+    <figcaption>通过 Karing 成功访问 YouTube 页面</figcaption>
+  </figure>
+</div>
+
+<div class="box">
+  <h2>六、常见问题简要整理</h2>
+
+  <h3>1. Karing 支持哪些订阅类型？</h3>
+  <p>Karing 支持 Clash、Sing-box、Shadowsocks、V2ray 等常见订阅类型，一般机场都可以直接兼容。</p>
+
+  <h3>2. 添加 / 更新配置失败怎么办？</h3>
+  <ul>
+    <li>先在浏览器中打开订阅链接，确认链接本身是否可用。</li>
+    <li>如果打不开，可能是链接过期或域名被封，去机场后台复制新的订阅链接。</li>
+    <li>也可以用订阅转换工具（如 sub-web）转成 sing-box / Clash 兼容格式后再导入。</li>
+  </ul>
+
+  <h3>3. 小米手机无法安装 Karing？</h3>
+  <ul>
+    <li>Karing 有可能被 MIUI 标记为高风险应用。</li>
+    <li>解决办法：先断网或打开飞行模式，并关闭“安全守护-增强防护”，再尝试安装。</li>
+  </ul>
+
+  <h3>4. Windows 端使用报错？</h3>
+  <ul>
+    <li>优先用管理员权限运行 Karing。</li>
+    <li>检查系统中是否还有其它翻墙软件在运行，全部退出后再试。</li>
+    <li>仍旧有问题时，可以尝试更新到最新版本或重新安装。</li>
+  </ul>
+
+  <h3>5. 更多资源</h3>
+  <p>可以关注站点推荐的 Telegram 频道获取更多资源：</p>
+  <figure>
+    <img src="https://clashxpro.net/wp-content/uploads/2025/05/telegram-icon.png" alt="Telegram 频道图标">
+    <figcaption>更多资源可以关注相关 Telegram 频道</figcaption>
+  </figure>
+
+  <div class="box danger">
+    <strong>重要声明：</strong>请在遵守当地法律法规的前提下使用包括 Karing 在内的所有代理工具，不要将其用于任何违法用途。
+  </div>
+</div>
+
+<footer>
+  本页面为作者在 <a href="https://karing.cc" target="_blank" rel="noopener">Karing.cc</a> 发布教程的离线整理版，
+  仅供个人学习 / 备份使用。<br>
+  如需最新内容，请以官网页面为准。
+</footer>
+
+</body>
+</html>
