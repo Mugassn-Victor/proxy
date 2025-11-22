@@ -4,27 +4,82 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mugassn Proxy 配置链接</title>
-    <!-- 样式在上一级目录 -->
+    <title>Mugassn Proxy 配置中心</title>
+    <!-- 注意：样式文件在上一级目录 -->
     <link rel="stylesheet" href="../style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <!-- 针对结果页的小增强样式 -->
+    <style>
+        .result-page .link-block {
+            margin-bottom: 24px;
+        }
+
+        /* 显示订阅链接的输入框，尽量占满宽度，方便看全 */
+        #linkInput.link-input {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            padding: 8px 10px;
+            font-size: 14px;
+        }
+
+        /* 美化复制按钮 */
+        .copy-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 18px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* 如果你的 .submit 在 style.css 里已经有背景色，这里只补充一点阴影/过渡 */
+        .copy-btn.submit {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.1s ease;
+        }
+
+        .copy-btn.submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+            opacity: 0.95;
+        }
+
+        .copy-btn i {
+            font-size: 16px;
+        }
+
+        #copyStatus {
+            font-size: 13px;
+            margin-top: 6px;
+            opacity: 0.9;
+        }
+    </style>
 </head>
 <body>
     <div id="page" class="site">
         <div class="container">
             <div class="login">
                 <div class="hero">
-                    <h1>配置链接<br>Mugassn Proxy</h1>
+                    <!-- 标题里显示 用户 xxx 的配置中心 -->
+                    <h1>用户 <span id="usernameTitle"></span> 的配置中心</h1>
                 </div>
                 <div class="main result-page">
                     <!-- 链接展示区 -->
                     <div class="link-block">
                         <p>为用户 <span id="usernameText"></span> 生成的订阅链接：</p>
                         <p class="password">
-                            <input type="text" id="linkInput" readonly>
+                            <input type="text" id="linkInput" class="link-input" readonly>
                         </p>
                         <p>
-                            <button class="submit" id="copyButton" type="button">复制链接</button>
+                            <!-- 美化后的复制按钮 -->
+                            <button class="submit copy-btn" id="copyButton" type="button">
+                                <i class="ri-file-copy-line"></i>
+                                <span>复制链接</span>
+                            </button>
                         </p>
                         <p id="copyStatus"></p>
                     </div>
@@ -75,13 +130,15 @@
             }
             username = decodeURIComponent(username);
 
-            const usernameText = document.getElementById('usernameText');
-            const linkInput = document.getElementById('linkInput');
-            const copyButton = document.getElementById('copyButton');
-            const copyStatus = document.getElementById('copyStatus');
+            const usernameTitle = document.getElementById('usernameTitle');
+            const usernameText  = document.getElementById('usernameText');
+            const linkInput     = document.getElementById('linkInput');
+            const copyButton    = document.getElementById('copyButton');
+            const copyStatus    = document.getElementById('copyStatus');
 
             if (!username) {
-                usernameText.textContent = '（未知用户）';
+                usernameTitle.textContent = '未知用户';
+                usernameText.textContent  = '未知用户';
                 linkInput.value = '未获取到用户名，请返回首页重新查询。';
                 copyButton.disabled = true;
                 return;
@@ -92,7 +149,10 @@
                         encodeURIComponent(username) +
                         '.yaml';
 
-            usernameText.textContent = username;
+            // 标题 & 文本里的用户名
+            usernameTitle.textContent = username;
+            usernameText.textContent  = username;
+            // 输入框里显示完整链接
             linkInput.value = url;
 
             // 复制按钮逻辑
@@ -116,7 +176,7 @@
                 }
             });
 
-            // 你之后在这里填入真实教程链接：
+            // 这里改成你自己的教程链接：
             // document.getElementById('iosTutorial').href = 'https://你的iOS教程链接';
             // document.getElementById('androidTutorial').href = 'https://你的Android教程链接';
             // document.getElementById('windowsTutorial').href = 'https://你的Windows教程链接';
