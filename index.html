@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
 
-    <!-- 仅用于验证码弹窗 和 用户名输入框 微调，不会大改原来的布局 -->
+    <!-- 仅用于验证码弹窗 和 用户名输入框 placeholder 微调 -->
     <style>
         .captcha-modal {
             position: fixed;
@@ -83,11 +83,12 @@
             color: #111827;
         }
 
-        /* 用户名输入框：高度稍微加高 + 行高相同，让“请输入用户名”尽量垂直居中 */
+        /* 只轻微调一下内边距，不动高度、行高，尽量不破坏原 style.css 布局 */
         #usernameInput {
-            height: 44px;          /* 可以按你实际效果调成 40 / 42 / 48 等 */
-            line-height: 44px;
-            padding: 0 12px;
+            padding-top: 6px;      /* 让文字稍微往下挪一点 */
+            padding-bottom: 6px;
+            padding-left: 12px;
+            padding-right: 12px;
             box-sizing: border-box;
         }
         /* 用户名输入框 placeholder 颜色浅一点 */
