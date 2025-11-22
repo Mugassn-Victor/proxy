@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mugassn Proxy 配置链接</title>
-    <!-- 注意这里样式文件在上一级目录 -->
+    <!-- 样式在上一级目录 -->
     <link rel="stylesheet" href="../style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
 </head>
@@ -35,7 +35,6 @@
 
                         <h3>iOS 配置教程</h3>
                         <p>适用于 Clash / Stash / Shadowrocket 等客户端。</p>
-                        <!-- TODO: 在这里替换成你自己的 iOS 教程链接 -->
                         <p>
                             <a id="iosTutorial" href="#" target="_blank">
                                 iOS 教程（点此打开，待你替换链接）
@@ -44,7 +43,6 @@
 
                         <h3>Android 配置教程</h3>
                         <p>适用于 Clash for Android 等客户端。</p>
-                        <!-- TODO: 在这里替换成你自己的 Android 教程链接 -->
                         <p>
                             <a id="androidTutorial" href="#" target="_blank">
                                 Android 教程（点此打开，待你替换链接）
@@ -53,7 +51,6 @@
 
                         <h3>Windows 配置教程</h3>
                         <p>适用于 Clash Verge / Clash for Windows 等客户端。</p>
-                        <!-- TODO: 在这里替换成你自己的 Windows 教程链接 -->
                         <p>
                             <a id="windowsTutorial" href="#" target="_blank">
                                 Windows 教程（点此打开，待你替换链接）
@@ -70,14 +67,14 @@
     </div>
 
     <script>
-        // 解析 URL 参数中的 user
-        function getQueryParam(name) {
-            const params = new URLSearchParams(window.location.search);
-            return params.get(name);
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
-            const username = getQueryParam('user');
+            // ✅ 从 URL 的 hash 部分读取用户名，例如 /user/#wzk
+            let username = window.location.hash || "";
+            if (username.startsWith("#")) {
+                username = username.slice(1);
+            }
+            username = decodeURIComponent(username);
+
             const usernameText = document.getElementById('usernameText');
             const linkInput = document.getElementById('linkInput');
             const copyButton = document.getElementById('copyButton');
@@ -112,14 +109,14 @@
                             copyStatus.textContent = '复制失败，请手动复制链接。';
                         });
                 } else {
-                    // 兼容不支持 navigator.clipboard 的老浏览器
+                    // 兼容旧浏览器
                     linkInput.select();
                     document.execCommand('copy');
                     copyStatus.textContent = '已复制到剪贴板 ✅';
                 }
             });
 
-            // 你之后可以在这里直接改教程链接，例如：
+            // 你之后在这里填入真实教程链接：
             // document.getElementById('iosTutorial').href = 'https://你的iOS教程链接';
             // document.getElementById('androidTutorial').href = 'https://你的Android教程链接';
             // document.getElementById('windowsTutorial').href = 'https://你的Windows教程链接';
