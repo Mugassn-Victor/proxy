@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>登录</title>
+    <title>Mugassn Proxy 用户查询</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
 </head>
@@ -22,11 +22,11 @@
                             <input type="text" id="usernameInput" placeholder="用户名">
                         </p>
                         <p>
-                            <input type="submit" class="submit" id="submitButton" value="登录">
+                            <input type="submit" class="submit" id="submitButton" value="查询">
                         </p>
                     </form>
 
-                    <!-- 查询结果显示区域 -->
+                    <!-- 查询结果提示区域 -->
                     <p id="result"></p>
                 </div>
             </div>
@@ -78,17 +78,11 @@
                         }
 
                         if (found) {
-                            const url = 'https://mugassn-proxy.dpdns.org/clash/' +
-                                        encodeURIComponent(username) +
-                                        '.yaml';
-
-                            resultEl.innerHTML =
-                                '已找到该用户，对应配置链接：<br>' +
-                                '<a href="' + url +
-                                '" target="_blank" rel="noopener noreferrer">' +
-                                url +
-                                '</a>';
+                            // 查询成功，跳转到 user 目录里的 index.html，并把用户名带过去
+                            const target = 'user/index.html?user=' + encodeURIComponent(username);
+                            window.location.href = target;
                         } else {
+                            // 查询失败，在本页提示
                             resultEl.textContent = '未查询到该用户';
                         }
                     })
