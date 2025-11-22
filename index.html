@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
 
-    <!-- 仅用于验证码弹窗 和 用户名输入框 placeholder 微调 -->
+    <!-- 仅用于验证码弹窗 和 一点小位置微调，不会大改原来的布局 -->
     <style>
         .captcha-modal {
             position: fixed;
@@ -83,14 +83,11 @@
             color: #111827;
         }
 
-        /* 只轻微调一下内边距，不动高度、行高，尽量不破坏原 style.css 布局 */
-        #usernameInput {
-            padding-top: 10px;      /* 让文字稍微往下挪一点 */
-            padding-bottom: 6px;
-            padding-left: 12px;
-            padding-right: 12px;
-            box-sizing: border-box;
+        /* ✅ 整个表单整体往下挪：用户名输入框 + 查询按钮一起下移 */
+        #loginForm {
+            margin-top: 40px; /* 想更低就改成 60 / 80 等 */
         }
+
         /* 用户名输入框 placeholder 颜色浅一点 */
         #usernameInput::placeholder {
             color: #9ca3af;
