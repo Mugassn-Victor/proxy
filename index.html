@@ -52,6 +52,10 @@
             padding: 0 8px;
             font-size: 14px;
         }
+        /* 验证码输入框的 placeholder 颜色浅一点 */
+        .captcha-input::placeholder {
+            color: #aaaaaa;
+        }
         #captchaCanvas {
             box-sizing: border-box;
             border: 1px solid #ddd;
@@ -78,6 +82,11 @@
             background-color: #e5e7eb;
             color: #111827;
         }
+
+        /* 用户名输入框 placeholder 也浅一点 */
+        #usernameInput::placeholder {
+            color: #9ca3af;
+        }
     </style>
 </head>
 <body>
@@ -91,14 +100,14 @@
                     <form id="loginForm">
                         <!-- 只保留用户名输入框 -->
                         <p class="password">
-                            <input type="text" id="usernameInput" placeholder="用户名">
+                            <input type="text" id="usernameInput" placeholder="请输入用户名">
                         </p>
                         <p>
                             <input type="submit" class="submit" id="submitButton" value="查询">
                         </p>
                     </form>
 
-                    <!-- 查询结果提示区域（只用于一些文字提示，不再放“未查询到该用户”） -->
+                    <!-- 查询结果提示区域 -->
                     <p id="result"></p>
                 </div>
             </div>
@@ -135,11 +144,54 @@
             const captchaCancel = document.getElementById('captchaCancel');
 
             // 状态控制
-            let needCaptcha = false;      // 是否需要验证码（第一次失败后变为 true）
-            let captchaPassed = false;    // 验证码是否已通过
+            let needCaptcha = false;      // 第一次失败后变为 true，之后每次都需要验证码
             let captchaCode = [];         // 当前验证码字符数组
+            let pendingUsername = '';     // 需要查询的用户名（在弹窗打开时记录）
 
             // ============== 通用函数 ==============
+
+            function performQuery(username) {
+                // 读取同目录下的 users.txt
+                fetch('users.txt?_=' + Date.now())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('用户数据文件加载失败');
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        const lines = data.split(/\r?\n/);
+                        let found = false;
+
+                        for (const line of lines) {
+                            const trimmed = line.trim();
+                            if (!trimmed) continue; // 跳过空行
+
+                            // 每行格式：用户名 空格 日期
+                            const parts = trimmed.split(/\s+/);
+                            const nameInFile = parts[0];
+
+                            if (nameInFile === username) {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (found) {
+                            // 查询成功：跳转到 /user/#用户名
+                            const target = 'user/#' + encodeURIComponent(username);
+                            window.location.href = target;
+                        } else {
+                            // 第一次失败：弹窗提示 + 之后强制验证码
+                            alert('未查询到该用户');
+                            needCaptcha = true; // 一旦置为 true，之后每次都要验证码
+                        }
+                    })
+                    .catch(err => {
+                        console.error('文件读取错误:', err);
+                        resultEl.textContent = '系统错误，请稍后再试！';
+                    });
+            }
 
             function openCaptchaModal() {
                 captchaInput.value = '';
@@ -224,9 +276,15 @@
 
                 if (val === num) {
                     alert('验证通过！');
-                    captchaPassed = true;
                     closeCaptchaModal();
-                    // 验证通过后，用户可以再次点击“查询”继续操作
+
+                    // 验证码通过后，使用当前待查询的用户名进行查询
+                    let username = pendingUsername || usernameInput.value.trim();
+                    if (!username) {
+                        alert('用户名为空，请返回重新输入！');
+                        return;
+                    }
+                    performQuery(username);
                 } else {
                     alert('验证码错误！请重新输入！');
                     captchaInput.value = '';
@@ -252,53 +310,15 @@
                     return;
                 }
 
-                // 如果已经要求验证码但尚未通过，先弹验证码
-                if (needCaptcha && !captchaPassed) {
+                if (needCaptcha) {
+                    // 已经进入需要验证码模式：记录用户名，先弹验证码
+                    pendingUsername = username;
                     openCaptchaModal();
                     return;
                 }
 
-                // 读取同目录下的 users.txt
-                fetch('users.txt?_=' + Date.now())
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('用户数据文件加载失败');
-                        }
-                        return response.text();
-                    })
-                    .then(data => {
-                        const lines = data.split(/\r?\n/);
-                        let found = false;
-
-                        for (const line of lines) {
-                            const trimmed = line.trim();
-                            if (!trimmed) continue; // 跳过空行
-
-                            // 每行格式：用户名 空格 日期
-                            const parts = trimmed.split(/\s+/);
-                            const nameInFile = parts[0];
-
-                            if (nameInFile === username) {
-                                found = true;
-                                break;
-                            }
-                        }
-
-                        if (found) {
-                            // 查询成功：跳转到 /user/#用户名
-                            const target = 'user/#' + encodeURIComponent(username);
-                            window.location.href = target;
-                        } else {
-                            // 第一次失败：弹窗提示 + 之后强制验证码
-                            alert('未查询到该用户');
-                            needCaptcha = true;
-                            captchaPassed = false;
-                        }
-                    })
-                    .catch(err => {
-                        console.error('文件读取错误:', err);
-                        resultEl.textContent = '系统错误，请稍后再试！';
-                    });
+                // 初始状态：不需要验证码，直接查询
+                performQuery(username);
             });
         });
     </script>
