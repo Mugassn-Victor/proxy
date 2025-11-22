@@ -7,7 +7,7 @@ proxies:
       type: ss
       udp: true
     - client-fingerprint: chrome
-      name: "\U0001F1E8\U0001F1E6CA_1|8.6MB/s"
+      name: "客服微信:Mugassn"
       port: 60552
       reality-opts:
         public-key: QLOalXjMmrryGjcV7-jMDyWD2E7I23r9A95nqaP0Pho
