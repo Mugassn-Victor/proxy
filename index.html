@@ -21,14 +21,18 @@
                             <input type="email" id="authCode" placeholder="邮箱">
                         </p>
                         <p class="password">
-                            <input type="password" id="passwordInput" placeholder="授权码">
-                            <i class="ri-eye-off-line" id="togglePassword"></i>
+                            <!-- 这里改成输入用户名，不再是授权码 -->
+                            <input type="text" id="passwordInput" placeholder="用户名">
+                            <!-- 小眼睛图标去掉了，如果想保留可以再加回去 -->
                             <a href="https://preview.mugassn.cloudns.org" target="_blank">谱面预览</a>
                         </p>
                         <p>
                             <input type="submit" class="submit" id="submitButton" value="登录">
                         </p>
                     </form>
+
+                    <!-- 查询结果显示区域：在这里贴出链接或显示未查询到 -->
+                    <p id="result"></p>
                 </div>
             </div>
         </div>
@@ -36,57 +40,68 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const passwordInput = document.getElementById('passwordInput');
-        const submitButton = document.getElementById('submitButton');
-        const togglePassword = document.getElementById('togglePassword');
+            const usernameInput = document.getElementById('passwordInput'); // 现在是“用户名”输入框
+            const submitButton = document.getElementById('submitButton');
+            const resultEl = document.getElementById('result');
 
-        togglePassword.addEventListener('click', () => {
-            if (passwordInput.type === "password") {
-                passwordInput.type = "text";
-        togglePassword.classList.remove("ri-eye-off-line");
-        togglePassword.classList.add("ri-eye-line");
-        } else {
-            passwordInput.type = "password";
-            togglePassword.classList.remove("ri-eye-line");
-            togglePassword.classList.add("ri-eye-off-line");
-        }
-        });
+            submitButton.addEventListener('click', (event) => {
+                event.preventDefault();
 
-        submitButton.addEventListener('click', (event) => {
-            event.preventDefault(); 
+                const username = usernameInput.value.trim();
+                resultEl.textContent = '';      // 清空上一次结果
+                resultEl.innerHTML = '';       // 同时清空 HTML
 
-        const password = passwordInput.value.trim();
-        if (!password) {
-            alert('请输入验证码！');
-            return;
-        }
+                if (!username) {
+                    resultEl.textContent = '请输入用户名！';
+                    return;
+                }
 
-        fetch('404.txt')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('验证失败');
-        }
-        return response.text();
-        })
-            .then(data => {
-                const lines = data.split('\n');
-        const credentials = lines.map(line => line.trim().split(' '));
+                // 读取同目录下的 users.txt
+                fetch('users.txt?_=' + Date.now())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('用户数据文件加载失败');
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        const lines = data.split(/\r?\n/);
+                        let found = false;
 
-        const matched = credentials.find(cred => cred[0] === password);
+                        for (const line of lines) {
+                            const trimmed = line.trim();
+                            if (!trimmed) continue; // 跳过空行
 
-        if (matched && matched.length > 1) {
-            const decodedUrl = atob(matched[1].trim()); 
-            alert('登录成功，正在跳转...');
-            window.location.href = decodedUrl; 
-        } else {
-            alert('未查询存在该识别码，请重试！');
-        }
-        })
-            .catch(err => {
-                console.error('文件读取错误:', err);
-        alert('系统错误，请稍后再试！');
-        });
-        });
+                            // 每行格式：用户名 空格 日期
+                            const parts = trimmed.split(/\s+/);
+                            const nameInFile = parts[0];
+
+                            if (nameInFile === username) {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (found) {
+                            const url = 'https://mugassn-proxy.dpdns.org/clash/' +
+                                        encodeURIComponent(username) +
+                                        '.yaml';
+
+                            resultEl.innerHTML =
+                                '已找到该用户，对应配置链接：<br>' +
+                                '<a href="' + url +
+                                '" target="_blank" rel="noopener noreferrer">' +
+                                url +
+                                '</a>';
+                        } else {
+                            resultEl.textContent = '未查询到该用户';
+                        }
+                    })
+                    .catch(err => {
+                        console.error('文件读取错误:', err);
+                        resultEl.textContent = '系统错误，请稍后再试！';
+                    });
+            });
         });
     </script>
 
