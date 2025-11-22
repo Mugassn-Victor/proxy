@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
 
-    <!-- 仅用于验证码弹窗的样式，不会覆盖你原来的页面布局 -->
+    <!-- 仅用于验证码弹窗 和 用户名输入框 微调，不会大改原来的布局 -->
     <style>
         .captcha-modal {
             position: fixed;
@@ -52,7 +52,7 @@
             padding: 0 8px;
             font-size: 14px;
         }
-        /* 验证码输入框的 placeholder 颜色浅一点 */
+        /* 验证码输入框 placeholder 颜色浅一点 */
         .captcha-input::placeholder {
             color: #aaaaaa;
         }
@@ -83,7 +83,14 @@
             color: #111827;
         }
 
-        /* 用户名输入框 placeholder 也浅一点 */
+        /* 用户名输入框：高度稍微加高 + 行高相同，让“请输入用户名”尽量垂直居中 */
+        #usernameInput {
+            height: 44px;          /* 可以按你实际效果调成 40 / 42 / 48 等 */
+            line-height: 44px;
+            padding: 0 12px;
+            box-sizing: border-box;
+        }
+        /* 用户名输入框 placeholder 颜色浅一点 */
         #usernameInput::placeholder {
             color: #9ca3af;
         }
@@ -146,12 +153,12 @@
             // 状态控制
             let needCaptcha = false;      // 第一次失败后变为 true，之后每次都需要验证码
             let captchaCode = [];         // 当前验证码字符数组
-            let pendingUsername = '';     // 需要查询的用户名（在弹窗打开时记录）
+            let pendingUsername = '';     // 弹出验证码时记录的用户名
 
             // ============== 通用函数 ==============
 
+            // 真正去查 users.txt 的函数
             function performQuery(username) {
-                // 读取同目录下的 users.txt
                 fetch('users.txt?_=' + Date.now())
                     .then(response => {
                         if (!response.ok) {
@@ -178,13 +185,13 @@
                         }
 
                         if (found) {
-                            // 查询成功：跳转到 /user/#用户名
+                            // 查到用户：跳转到 /user/#用户名
                             const target = 'user/#' + encodeURIComponent(username);
                             window.location.href = target;
                         } else {
-                            // 第一次失败：弹窗提示 + 之后强制验证码
+                            // 第一次失败：提示 + 以后都要验证码
                             alert('未查询到该用户');
-                            needCaptcha = true; // 一旦置为 true，之后每次都要验证码
+                            needCaptcha = true;
                         }
                     })
                     .catch(err => {
@@ -238,7 +245,7 @@
                     context.translate(-x, -y);
                 }
 
-                // 画干扰线
+                // 干扰线
                 for (let i = 0; i <= 5; i++) {
                     context.strokeStyle = randomColor();
                     context.beginPath();
@@ -247,7 +254,7 @@
                     context.stroke();
                 }
 
-                // 画干扰点
+                // 干扰点
                 for (let i = 0; i <= 30; i++) {
                     context.strokeStyle = randomColor();
                     context.beginPath();
@@ -278,7 +285,7 @@
                     alert('验证通过！');
                     closeCaptchaModal();
 
-                    // 验证码通过后，使用当前待查询的用户名进行查询
+                    // 验证通过后，用 pendingUsername（或当前输入框里的用户名）去查询
                     let username = pendingUsername || usernameInput.value.trim();
                     if (!username) {
                         alert('用户名为空，请返回重新输入！');
@@ -311,13 +318,13 @@
                 }
 
                 if (needCaptcha) {
-                    // 已经进入需要验证码模式：记录用户名，先弹验证码
+                    // 进入需要验证码模式：记录用户名，先弹验证码
                     pendingUsername = username;
                     openCaptchaModal();
                     return;
                 }
 
-                // 初始状态：不需要验证码，直接查询
+                // 初始状态：不需要验证码，直接查一次
                 performQuery(username);
             });
         });
