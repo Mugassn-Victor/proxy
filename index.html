@@ -78,11 +78,10 @@
                         }
 
                         if (found) {
-                            // 查询成功，跳转到 user 目录里的 index.html，并把用户名带过去
-                            const target = 'user/index.html?user=' + encodeURIComponent(username);
+                            // ✅ 查询成功：跳转到 /user/#用户名
+                            const target = 'user/#' + encodeURIComponent(username);
                             window.location.href = target;
                         } else {
-                            // 查询失败，在本页提示
                             resultEl.textContent = '未查询到该用户';
                         }
                     })
