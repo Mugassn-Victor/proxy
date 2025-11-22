@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mugassn Proxy 配置链接</title>
+    <!-- 注意这里样式文件在上一级目录 -->
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <div id="page" class="site">
+        <div class="container">
+            <div class="login">
+                <div class="hero">
+                    <h1>配置链接<br>Mugassn Proxy</h1>
+                </div>
+                <div class="main result-page">
+                    <!-- 链接展示区 -->
+                    <div class="link-block">
+                        <p>为用户 <span id="usernameText"></span> 生成的订阅链接：</p>
+                        <p class="password">
+                            <input type="text" id="linkInput" readonly>
+                        </p>
+                        <p>
+                            <button class="submit" id="copyButton" type="button">复制链接</button>
+                        </p>
+                        <p id="copyStatus"></p>
+                    </div>
+
+                    <!-- 教程区域 -->
+                    <div class="tutorials">
+                        <h2>各平台配置教程</h2>
+
+                        <h3>iOS 配置教程</h3>
+                        <p>适用于 Clash / Stash / Shadowrocket 等客户端。</p>
+                        <!-- TODO: 在这里替换成你自己的 iOS 教程链接 -->
+                        <p>
+                            <a id="iosTutorial" href="#" target="_blank">
+                                iOS 教程（点此打开，待你替换链接）
+                            </a>
+                        </p>
+
+                        <h3>Android 配置教程</h3>
+                        <p>适用于 Clash for Android 等客户端。</p>
+                        <!-- TODO: 在这里替换成你自己的 Android 教程链接 -->
+                        <p>
+                            <a id="androidTutorial" href="#" target="_blank">
+                                Android 教程（点此打开，待你替换链接）
+                            </a>
+                        </p>
+
+                        <h3>Windows 配置教程</h3>
+                        <p>适用于 Clash Verge / Clash for Windows 等客户端。</p>
+                        <!-- TODO: 在这里替换成你自己的 Windows 教程链接 -->
+                        <p>
+                            <a id="windowsTutorial" href="#" target="_blank">
+                                Windows 教程（点此打开，待你替换链接）
+                            </a>
+                        </p>
+
+                        <p style="margin-top: 1.5rem;">
+                            <a href="../index.html">返回重新查询其他用户</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 解析 URL 参数中的 user
+        function getQueryParam(name) {
+            const params = new URLSearchParams(window.location.search);
+            return params.get(name);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const username = getQueryParam('user');
+            const usernameText = document.getElementById('usernameText');
+            const linkInput = document.getElementById('linkInput');
+            const copyButton = document.getElementById('copyButton');
+            const copyStatus = document.getElementById('copyStatus');
+
+            if (!username) {
+                usernameText.textContent = '（未知用户）';
+                linkInput.value = '未获取到用户名，请返回首页重新查询。';
+                copyButton.disabled = true;
+                return;
+            }
+
+            // 构造订阅链接
+            const url = 'https://mugassn-proxy.dpdns.org/clash/' +
+                        encodeURIComponent(username) +
+                        '.yaml';
+
+            usernameText.textContent = username;
+            linkInput.value = url;
+
+            // 复制按钮逻辑
+            copyButton.addEventListener('click', () => {
+                const textToCopy = linkInput.value;
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(textToCopy)
+                        .then(() => {
+                            copyStatus.textContent = '已复制到剪贴板 ✅';
+                        })
+                        .catch(err => {
+                            console.error('复制失败:', err);
+                            copyStatus.textContent = '复制失败，请手动复制链接。';
+                        });
+                } else {
+                    // 兼容不支持 navigator.clipboard 的老浏览器
+                    linkInput.select();
+                    document.execCommand('copy');
+                    copyStatus.textContent = '已复制到剪贴板 ✅';
+                }
+            });
+
+            // 你之后可以在这里直接改教程链接，例如：
+            // document.getElementById('iosTutorial').href = 'https://你的iOS教程链接';
+            // document.getElementById('androidTutorial').href = 'https://你的Android教程链接';
+            // document.getElementById('windowsTutorial').href = 'https://你的Windows教程链接';
+        });
+    </script>
+</body>
+</html>
