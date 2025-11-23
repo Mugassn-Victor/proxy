@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mugassn Proxy 用户查询</title>
+    <title>Mugassn Proxy 配置中心</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
 
@@ -110,7 +110,7 @@
                     <form id="loginForm">
                         <!-- 只保留用户名输入框 -->
                         <p class="password">
-                            <input type="text" id="usernameInput" placeholder="请输入用户名">
+                            <input type="text" id="usernameInput" placeholder="请输入收货邮箱">
                         </p>
                         <p>
                             <input type="submit" class="submit" id="submitButton" value="查询">
@@ -291,7 +291,7 @@
                     // 验证通过后，用 pendingUsername（或当前输入框里的用户名）去查询
                     let username = pendingUsername || usernameInput.value.trim();
                     if (!username) {
-                        alert('用户名为空，请返回重新输入！');
+                        alert('邮箱为空，请返回重新输入！');
                         return;
                     }
                     performQuery(username);
@@ -316,7 +316,7 @@
                 resultEl.innerHTML = '';
 
                 if (!username) {
-                    resultEl.textContent = '请输入用户名！';
+                    resultEl.textContent = '请输入邮箱！';
                     return;
                 }
 
