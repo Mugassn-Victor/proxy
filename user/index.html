@@ -15,7 +15,7 @@
             margin-bottom: 24px;
         }
 
-        /* 显示订阅链接的输入框，尽量占满宽度，方便看全 + 去掉边框 */
+        /* 显示订阅链接的输入框，改成 textarea，支持多行换行显示 */
         #linkInput.link-input {
             width: 100%;
             max-width: 100%;
@@ -24,6 +24,8 @@
             font-size: 14px;
             border: none;          /* 去掉边框 */
             outline: none;         /* 点击时不出现蓝色外框 */
+            resize: vertical;      /* 允许上下拉高，不想拉动可改成 none */
+            word-break: break-all; /* 超长 URL 强制换行 */
         }
 
         /* 美化复制按钮 */
@@ -84,7 +86,8 @@
                     <div class="link-block">
                         <p><strong>订阅链接：</strong></p>
                         <p class="password">
-                            <input type="text" id="linkInput" class="link-input" readonly>
+                            <!-- 改成 textarea，支持多行显示完整链接 -->
+                            <textarea id="linkInput" class="link-input" rows="2" readonly></textarea>
                         </p>
                         <p>
                             <!-- 美化后的复制按钮 -->
@@ -149,7 +152,7 @@
 
             // 标题里的用户名
             usernameTitle.textContent = username;
-            // 输入框里显示完整链接
+            // textarea 里显示完整链接
             linkInput.value = url;
 
             // 复制按钮逻辑
