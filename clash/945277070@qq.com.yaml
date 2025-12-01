@@ -15,7 +15,7 @@ proxies:
         path: /?ed=2560
     - client-fingerprint: chrome
       flow: xtls-rprx-vision
-      name: "\U0001F1E9\U0001F1EADE_1|4.5MB/s"
+      name: "到期: 2026-01-01"
       port: 443
       reality-opts:
         public-key: FcZ6-LZS5HHqAJ8YwFV_Gu_WxrMuylqxYjBu-1CLVRI
@@ -28,7 +28,7 @@ proxies:
       uuid: 2dfa740c-8069-4993-8b96-c3e5dc540593
     - client-fingerprint: chrome
       flow: xtls-rprx-vision
-      name: "\U0001F1F8\U0001F1EASE_1|4.1MB/s"
+      name: "客服微信:Mugassn"
       port: 443
       reality-opts:
         public-key: mLmBhbVFfNuo2eUgBh6r9-5Koz9mUCn3aSzlR6IejUg
