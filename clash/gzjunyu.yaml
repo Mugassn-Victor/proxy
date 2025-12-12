@@ -1,7 +1,7 @@
 proxies:
     - alterId: "0"
       cipher: auto
-      name: "到期: 2025-12-24"
+      name: "到期: 2099-01-01"
       network: none
       port: 42277
       server: 192.204.47.79
