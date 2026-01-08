@@ -1,6 +1,6 @@
 proxies:
     - cipher: aes-128-gcm
-      name: "\U0001F1FA\U0001F1F8US_1|9.4MB/s"
+      name: "到期: 2026-02-07"
       password: shadowsocks
       port: "443"
       server: 173.244.56.6
@@ -10,7 +10,7 @@ proxies:
       encryption: none
       grpc-opts:
         grpc-service-name: ecb7f0f50489f81cd1983a56
-      name: "\U0001F1E8\U0001F1EDCH_1|6.3MB/s"
+      name: "客服微信:Mugassn"
       network: grpc
       port: "443"
       reality-opts:
