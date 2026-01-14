@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebDAV CORS 测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WebDAV CORS 测试工具</h1>
+        <p>测试你的 WebDAV 服务器是否支持跨域访问（CORS）</p>
+        
+        <div class="form-group">
+            <label for="webdavUrl">WebDAV 服务器地址：</label>
+            <input type="text" id="webdavUrl" placeholder="https://webdav.example.com" value="">
+        </div>
+        
+        <div class="form-group">
+            <label for="username">用户名：</label>
+            <input type="text" id="username" placeholder="用户名" value="">
+        </div>
+        
+        <div class="form-group">
+            <label for="password">密码：</label>
+            <input type="password" id="password" placeholder="密码" value="">
+        </div>
+        
+        <button onclick="testCORS()">测试 CORS 支持</button>
+        <button onclick="testWithFetch()">测试 Fetch API</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function showResult(message, type, details = '') {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = type;
+            resultDiv.innerHTML = `
+                <strong>${message}</strong>
+                ${details ? '<pre>' + details + '</pre>' : ''}
+            `;
+        }
+
+        async function testCORS() {
+            const url = document.getElementById('webdavUrl').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (!url) {
+                showResult('❌ 错误', 'error', '请输入 WebDAV 服务器地址');
+                return;
+            }
+
+            showResult('⏳ 测试中...', 'info', '正在检查 CORS 支持...');
+
+            try {
+                // 测试 OPTIONS 请求（CORS 预检）
+                const optionsResponse = await fetch(url, {
+                    method: 'OPTIONS',
+                    headers: {
+                        'Origin': window.location.origin,
+                        'Access-Control-Request-Method': 'PROPFIND',
+                        'Access-Control-Request-Headers': 'authorization,depth'
+                    }
+                });
+
+                const corsHeaders = {
+                    'Access-Control-Allow-Origin': optionsResponse.headers.get('Access-Control-Allow-Origin'),
+                    'Access-Control-Allow-Methods': optionsResponse.headers.get('Access-Control-Allow-Methods'),
+                    'Access-Control-Allow-Headers': optionsResponse.headers.get('Access-Control-Allow-Headers'),
+                    'Access-Control-Allow-Credentials': optionsResponse.headers.get('Access-Control-Allow-Credentials')
+                };
+
+                let resultMessage = '';
+                let hasAllHeaders = true;
+
+                if (corsHeaders['Access-Control-Allow-Origin']) {
+                    resultMessage += '✅ Access-Control-Allow-Origin: ' + corsHeaders['Access-Control-Allow-Origin'] + '\n';
+                } else {
+                    resultMessage += '❌ 缺少 Access-Control-Allow-Origin\n';
+                    hasAllHeaders = false;
+                }
+
+                if (corsHeaders['Access-Control-Allow-Methods']) {
+                    resultMessage += '✅ Access-Control-Allow-Methods: ' + corsHeaders['Access-Control-Allow-Methods'] + '\n';
+                } else {
+                    resultMessage += '❌ 缺少 Access-Control-Allow-Methods\n';
+                    hasAllHeaders = false;
+                }
+
+                if (corsHeaders['Access-Control-Allow-Headers']) {
+                    resultMessage += '✅ Access-Control-Allow-Headers: ' + corsHeaders['Access-Control-Allow-Headers'] + '\n';
+                } else {
+                    resultMessage += '❌ 缺少 Access-Control-Allow-Headers\n';
+                    hasAllHeaders = false;
+                }
+
+                if (hasAllHeaders) {
+                    showResult('✅ CORS 支持检测成功！', 'success', resultMessage + '\n该 WebDAV 服务器支持跨域访问，可以在纯前端使用。');
+                } else {
+                    showResult('⚠️ CORS 支持不完整', 'error', resultMessage + '\n该 WebDAV 服务器的 CORS 配置不完整，可能无法在纯前端正常使用。\n建议使用后端代理方式访问。');
+                }
+
+            } catch (error) {
+                showResult('❌ 测试失败', 'error', 
+                    '错误信息: ' + error.message + '\n\n' +
+                    '可能的原因：\n' +
+                    '1. WebDAV 服务器不支持 CORS\n' +
+                    '2. 服务器地址错误或无法访问\n' +
+                    '3. 网络连接问题\n\n' +
+                    '建议使用后端代理方式访问 WebDAV。'
+                );
+            }
+        }
+
+        async function testWithFetch() {
+            const url = document.getElementById('webdavUrl').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (!url) {
+                showResult('❌ 错误', 'error', '请输入 WebDAV 服务器地址');
+                return;
+            }
+
+            if (!username || !password) {
+                showResult('❌ 错误', 'error', '请输入用户名和密码');
+                return;
+            }
+
+            showResult('⏳ 测试中...', 'info', '正在尝试连接 WebDAV 服务器...');
+
+            try {
+                // 构造 Basic Auth
+                const auth = btoa(username + ':' + password);
+
+                // 尝试 PROPFIND 请求（列出目录）
+                const response = await fetch(url, {
+                    method: 'PROPFIND',
+                    headers: {
+                        'Authorization': 'Basic ' + auth,
+                        'Depth': '1',
+                        'Content-Type': 'application/xml'
+                    }
+                });
+
+                if (response.ok) {
+                    const text = await response.text();
+                    showResult('✅ 连接成功！', 'success', 
+                        '状态码: ' + response.status + '\n' +
+                        'WebDAV 服务器支持 CORS，可以在纯前端使用！\n\n' +
+                        '响应预览:\n' + text.substring(0, 500) + '...'
+                    );
+                } else {
+                    showResult('⚠️ 连接失败', 'error', 
+                        '状态码: ' + response.status + '\n' +
+                        '可能的原因：\n' +
+                        '1. 用户名或密码错误\n' +
+                        '2. 服务器拒绝访问\n' +
+                        '3. 路径不存在'
+                    );
+                }
+
+            } catch (error) {
+                showResult('❌ 连接失败', 'error', 
+                    '错误信息: ' + error.message + '\n\n' +
+                    '这通常意味着：\n' +
+                    '1. WebDAV 服务器不支持 CORS（最常见）\n' +
+                    '2. 服务器地址错误\n' +
+                    '3. 网络连接问题\n\n' +
+                    '建议：使用 PHP 后端代理访问 WebDAV，这样更安全且不受 CORS 限制。'
+                );
+            }
+        }
+    </script>
+</body>
+</html>
