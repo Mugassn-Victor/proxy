@@ -1,6 +1,6 @@
 proxies:
     - cipher: chacha20-ietf-poly1305
-      name: "到期: 2026-09-01"
+      name: "到期: 2026-08-19"
       password: W74XFALLLuw6m5IA
       port: "443"
       server: series-a1.samanehha.co
